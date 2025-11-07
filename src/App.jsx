@@ -23,6 +23,7 @@ function App() {
   const [copied, setCopied] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   
   // Refs
   const socketRef = useRef(null);
@@ -134,6 +135,9 @@ function App() {
 
   // Handle refresh inbox
   const handleRefreshInbox = async () => {
+    if (refreshing) return; // Prevent double click
+    
+    setRefreshing(true);
     try {
       // Fetch emails dari server
       const response = await fetch(`${BACKEND_URL}/api/emails/${emailAddress}`);
@@ -141,11 +145,14 @@ function App() {
         const data = await response.json();
         if (data.success) {
           setEmails(data.emails || []);
-          console.log('✅ Inbox refreshed');
+          console.log('Inbox refreshed');
         }
       }
     } catch (error) {
-      console.error('❌ Error refreshing inbox:', error);
+      console.error('Error refreshing inbox:', error);
+    } finally {
+      // Minimum 500ms loading untuk smooth UX
+      setTimeout(() => setRefreshing(false), 500);
     }
   };
 
@@ -206,7 +213,7 @@ function App() {
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #F9F7F7 0%, #DBE2EF 100%)' }}>
       {/* Header */}
-      <header className="backdrop-blur-md shadow-lg sticky top-0 z-50 border-b" style={{ backgroundColor: 'rgba(17, 45, 78, 0.95)', borderBottomColor: '#3F72AF' }}>
+      <header className="backdrop-blur-md shadow-lg sticky top-0 z-50 border-b animate-fadeIn" style={{ backgroundColor: 'rgba(17, 45, 78, 0.95)', borderBottomColor: '#3F72AF', animation: 'fadeIn 0.5s ease-out' }}>
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -233,7 +240,7 @@ function App() {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-3 space-y-3">
         {/* Email Address Card */}
-        <div className="rounded-lg shadow-lg p-3 border" style={{ background: 'white', borderColor: '#DBE2EF' }}>
+        <div className="rounded-lg shadow-lg p-3 border hover-lift" style={{ background: 'white', borderColor: '#DBE2EF', animation: 'scaleIn 0.6s ease-out' }}>
           <div className="space-y-2">
             <p className="text-center text-xs font-medium" style={{ color: '#3F72AF' }}>Alamat Email Sementara Anda</p>
             <div className="flex flex-col md:flex-row gap-2">
@@ -246,7 +253,7 @@ function App() {
               />
               <button
                 onClick={handleCopyEmail}
-                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-200 w-full md:w-auto justify-center"
+                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-300 w-full md:w-auto justify-center hover:scale-105"
                 style={{
                   background: copied ? '#3F72AF' : 'white',
                   color: copied ? 'white' : '#3F72AF',
@@ -267,20 +274,21 @@ function App() {
               </button>
               <button
                 onClick={handleRefreshInbox}
-                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-200 w-full md:w-auto justify-center hover:opacity-90"
+                disabled={refreshing}
+                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-200 w-full md:w-auto justify-center hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
-                  background: '#DBE2EF',
-                  color: '#112D4E',
+                  background: refreshing ? '#3F72AF' : '#DBE2EF',
+                  color: refreshing ? 'white' : '#112D4E',
                   border: '2px solid #3F72AF'
                 }}
-                title="Refresh inbox"
+                title={refreshing ? 'Memuat...' : 'Refresh inbox'}
               >
-                <RefreshCw className="w-4 h-4" />
-                <span>Refresh</span>
+                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                <span>{refreshing ? 'Memuat...' : 'Refresh'}</span>
               </button>
               <button
                 onClick={handleCreateNew}
-                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-200 w-full md:w-auto justify-center"
+                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-300 w-full md:w-auto justify-center hover:scale-105"
                 style={{
                   background: '#3F72AF',
                   color: 'white',
@@ -301,7 +309,7 @@ function App() {
         {/* Email List and Detail */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {/* Inbox List */}
-          <div className="lg:col-span-1 rounded-lg shadow-lg overflow-hidden border" style={{ background: 'white', borderColor: '#DBE2EF' }}>
+          <div className="lg:col-span-1 rounded-lg shadow-lg overflow-hidden border" style={{ background: 'white', borderColor: '#DBE2EF', animation: 'slideInFromLeft 0.7s ease-out' }}>
             <div className="px-3 py-2 flex items-center justify-between" style={{ background: '#3F72AF' }}>
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
                 <Inbox className="w-4 h-4" />
@@ -321,16 +329,17 @@ function App() {
                   <p className="text-xs" style={{ color: '#3F72AF' }}>Email akan muncul real-time</p>
                 </div>
               ) : (
-                emails.map((email) => (
+                emails.map((email, index) => (
                   <div
                     key={email.id}
                     onClick={() => setSelectedEmail(email)}
-                    className={`p-3 cursor-pointer transition-colors border-l-4 ${
+                    className={`email-card p-3 cursor-pointer transition-all duration-300 border-l-4 hover-lift ${
                       selectedEmail?.id === email.id ? '' : 'border-transparent'
                     }`}
                     style={{ 
                       borderLeftColor: selectedEmail?.id === email.id ? '#3F72AF' : 'transparent',
-                      background: selectedEmail?.id === email.id ? '#F9F7F7' : 'transparent'
+                      background: selectedEmail?.id === email.id ? '#F9F7F7' : 'transparent',
+                      animationDelay: `${index * 0.1}s`
                     }}
                   >
                     <div className="flex justify-between items-start mb-1">
@@ -358,7 +367,7 @@ function App() {
           </div>
 
           {/* Email Detail */}
-          <div className="lg:col-span-2 rounded-lg shadow-lg overflow-hidden border" style={{ background: 'white', borderColor: '#DBE2EF' }}>
+          <div className="lg:col-span-2 rounded-lg shadow-lg overflow-hidden border" style={{ background: 'white', borderColor: '#DBE2EF', animation: 'slideInFromRight 0.7s ease-out' }}>
             <div className="px-3 py-2 flex items-center gap-2" style={{ background: '#112D4E' }}>
               <Mail className="w-4 h-4 text-white" />
               <h2 className="text-sm font-bold text-white">
