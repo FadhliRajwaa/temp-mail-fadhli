@@ -1,0 +1,15 @@
+/* ===================================
+   TEMP MAIL - COMPONENT STYLES
+   Minimal animations & utilities
+   =================================== */
+
+/* Animations (minimal) */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
