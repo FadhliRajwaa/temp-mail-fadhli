@@ -317,7 +317,6 @@ app.post('/api/sendgrid/webhook', express.urlencoded({ extended: false }), async
     const recipientEmail = to ? to.split('<')[1]?.replace('>', '') || to : '';
     
     // Pastikan email untuk domain kita (accept both old and new domain)
-    const emailDomain = process.env.EMAIL_DOMAIN || 'mail.fadhlirajwaa.my.id';
     const rootDomain = 'fadhlirajwaa.my.id'; // Accept any subdomain
     
     if (!recipientEmail.includes(rootDomain)) {
@@ -325,7 +324,7 @@ app.post('/api/sendgrid/webhook', express.urlencoded({ extended: false }), async
       return res.status(200).send('OK');
     }
     
-    console.log(`✅ Email accepted for: ${recipientEmail}`);
+    console.log('Email accepted for:', recipientEmail);
 
     // Generate unique ID
     const emailId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
