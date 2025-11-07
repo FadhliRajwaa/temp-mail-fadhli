@@ -39,9 +39,15 @@ function App() {
 
   // Initialize email address and socket connection
   useEffect(() => {
-    // Generate initial email
-    const newEmail = generateEmailAddress();
+    // Cek localStorage untuk email yang sudah ada
+    const savedEmail = localStorage.getItem('tempMailAddress');
+    const newEmail = savedEmail || generateEmailAddress();
+    
+    // Simpan ke state dan localStorage
     setEmailAddress(newEmail);
+    if (!savedEmail) {
+      localStorage.setItem('tempMailAddress', newEmail);
+    }
 
     // Setup Socket.io connection
     socketRef.current = io(BACKEND_URL, {
@@ -110,24 +116,36 @@ function App() {
     };
   }, []);
 
-  // Handle email address change
-  const handleGenerateNew = () => {
-    const socket = socketRef.current;
-    
-    if (socket && emailAddress) {
-      // Leave current room
-      socket.emit('leave-room', emailAddress);
-    }
-    
-    // Generate new email
+  // Handle create new email
+  const handleCreateNew = () => {
     const newEmail = generateEmailAddress();
     setEmailAddress(newEmail);
     setEmails([]);
     setSelectedEmail(null);
     
-    if (socket && socket.connected) {
-      // Join new room
-      socket.emit('join-room', newEmail);
+    // Simpan ke localStorage
+    localStorage.setItem('tempMailAddress', newEmail);
+    
+    // Join new room
+    if (socketRef.current) {
+      socketRef.current.emit('join-room', newEmail);
+    }
+  };
+
+  // Handle refresh inbox
+  const handleRefreshInbox = async () => {
+    try {
+      // Fetch emails dari server
+      const response = await fetch(`${BACKEND_URL}/api/emails/${emailAddress}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setEmails(data.emails || []);
+          console.log('✅ Inbox refreshed');
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error refreshing inbox:', error);
     }
   };
 
@@ -228,13 +246,17 @@ function App() {
               />
               <button
                 onClick={handleCopyEmail}
-                className="md:w-auto px-4 py-2 rounded-lg font-semibold shadow flex items-center justify-center gap-2 text-sm"
-                style={{ background: copied ? '#112D4E' : '#3F72AF', color: 'white' }}
+                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-200 w-full md:w-auto justify-center"
+                style={{
+                  background: copied ? '#3F72AF' : 'white',
+                  color: copied ? 'white' : '#3F72AF',
+                  border: `2px solid ${copied ? '#3F72AF' : '#DBE2EF'}`
+                }}
               >
                 {copied ? (
                   <>
                     <CheckCircle className="w-4 h-4" />
-                    <span>Tersalin</span>
+                    <span>Tersalin!</span>
                   </>
                 ) : (
                   <>
@@ -244,11 +266,28 @@ function App() {
                 )}
               </button>
               <button
-                onClick={handleGenerateNew}
-                className="md:w-auto px-4 py-2 rounded-lg font-semibold shadow flex items-center justify-center gap-2 text-sm"
-                style={{ background: '#DBE2EF', color: '#112D4E' }}
+                onClick={handleRefreshInbox}
+                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-200 w-full md:w-auto justify-center hover:opacity-90"
+                style={{
+                  background: '#DBE2EF',
+                  color: '#112D4E',
+                  border: '2px solid #3F72AF'
+                }}
+                title="Refresh inbox"
               >
                 <RefreshCw className="w-4 h-4" />
+                <span>Refresh</span>
+              </button>
+              <button
+                onClick={handleCreateNew}
+                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-200 w-full md:w-auto justify-center"
+                style={{
+                  background: '#3F72AF',
+                  color: 'white',
+                  border: '2px solid #112D4E'
+                }}
+              >
+                <Mail className="w-4 h-4" />
                 <span>Buat Baru</span>
               </button>
             </div>
