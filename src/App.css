@@ -1,9 +1,10 @@
-/* ===================================
-   TEMP MAIL - COMPONENT STYLES
-   Minimal animations & utilities
-   =================================== */
+/* =============================================
+   TEMP MAIL - MODERN & INTERACTIVE STYLES
+   Upgraded with glassmorphism & micro-interactions
+   ============================================= */
 
-/* Animations */
+/* ========== ANIMATIONS ========== */
+
 @keyframes fadeIn {
   from { 
     opacity: 0; 
@@ -18,7 +19,7 @@
 @keyframes slideInFromLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-40px);
   }
   to {
     opacity: 1;
@@ -29,7 +30,7 @@
 @keyframes slideInFromRight {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(40px);
   }
   to {
     opacity: 1;
@@ -37,23 +38,14 @@
   }
 }
 
-@keyframes pulse {
-  0%, 100% { 
-    opacity: 1; 
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
     transform: scale(1);
-  }
-  50% { 
-    opacity: 0.8; 
-    transform: scale(1.05);
-  }
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
   }
 }
 
@@ -66,42 +58,66 @@
   }
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  50% {
+    transform: translateY(-10px);
   }
 }
 
-/* Smooth scroll */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(63, 114, 175, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(63, 114, 175, 0.6);
+  }
+}
+
+/* ========== SMOOTH BEHAVIORS ========== */
+
 html {
   scroll-behavior: smooth;
 }
 
-/* Email card animations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ========== EMAIL CARD ANIMATIONS ========== */
+
 .email-card {
   animation: slideInFromLeft 0.5s ease-out;
+  will-change: transform;
 }
 
 .email-card:nth-child(even) {
   animation: slideInFromRight 0.5s ease-out;
 }
 
-/* Hover effects */
+/* ========== HOVER & INTERACTION EFFECTS ========== */
+
 .hover-lift {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(63, 114, 175, 0.15);
 }
 
-/* Button hover effects */
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* ========== BUTTON RIPPLE EFFECT ========== */
+
 button {
   position: relative;
   overflow: hidden;
@@ -115,17 +131,84 @@ button::before {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.4);
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
 }
 
 button:active::before {
-  width: 300px;
-  height: 300px;
+  width: 400px;
+  height: 400px;
 }
 
-/* Loading skeleton */
+/* ========== GLASSMORPHISM ========== */
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(17, 45, 78, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ========== CUSTOM SCROLLBAR ========== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F9F7F7;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3F72AF, #112D4E);
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #112D4E;
+}
+
+/* ========== EMAIL CONTENT CONTAINER FIX ========== */
+/* CRITICAL: Fixed height untuk prevent UI jumping saat email besar */
+
+.email-detail-container {
+  max-height: 500px;
+  min-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3F72AF #F9F7F7;
+}
+
+.email-content-wrapper {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.email-content-wrapper img {
+  max-width: 100%;
+  height: auto;
+}
+
+.email-content-wrapper table {
+  max-width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+/* ========== LOADING STATES ========== */
+
 @keyframes skeleton-loading {
   0% {
     background-position: -200px 0;
@@ -139,4 +222,83 @@ button:active::before {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200px 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* ========== BADGE & PILL STYLES ========== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+}
+
+/* ========== GLOW EFFECTS ========== */
+
+.glow-on-hover {
+  transition: all 0.3s;
+}
+
+.glow-on-hover:hover {
+  box-shadow: 0 0 20px rgba(63, 114, 175, 0.4);
+}
+
+/* ========== GRADIENT TEXT ========== */
+
+.gradient-text {
+  background: linear-gradient(135deg, #3F72AF 0%, #112D4E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== PULSE ANIMATION ========== */
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ========== RESPONSIVE TWEAKS ========== */
+
+@media (max-width: 768px) {
+  .hover-lift:hover {
+    transform: none;
+  }
+  
+  .email-detail-container {
+    max-height: 400px;
+    min-height: 400px;
+  }
+}
+
+/* ========== FOCUS STATES ========== */
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #3F72AF;
+  outline-offset: 2px;
+}
+
+/* ========== TRANSITION OVERRIDES ========== */
+
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

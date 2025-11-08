@@ -213,18 +213,18 @@ function App() {
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #F9F7F7 0%, #DBE2EF 100%)' }}>
       {/* Header */}
-      <header className="backdrop-blur-md shadow-lg sticky top-0 z-50 border-b animate-fadeIn" style={{ backgroundColor: 'rgba(17, 45, 78, 0.95)', borderBottomColor: '#3F72AF', animation: 'fadeIn 0.5s ease-out' }}>
+      <header className="glass-dark shadow-lg sticky top-0 z-50 border-b animate-fadeIn" style={{ borderBottomColor: '#3F72AF', animation: 'fadeIn 0.5s ease-out' }}>
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg" style={{ background: '#3F72AF' }}>
+              <div className="p-2 rounded-lg glow-on-hover" style={{ background: 'linear-gradient(135deg, #3F72AF 0%, #112D4E 100%)' }}>
                 <Mail className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-lg font-bold text-white">Temp Mail</h1>
+              <h1 className="text-lg font-bold text-white gradient-text" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #DBE2EF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Temp Mail</h1>
             </div>
             {isConnected ? (
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(63, 114, 175, 0.2)', border: '1px solid #3F72AF' }}>
-                <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#3F72AF' }}></div>
+                <div className="w-2 h-2 rounded-full pulse-dot" style={{ background: '#3F72AF' }}></div>
                 <span className="text-xs font-semibold text-white hidden sm:inline">Online</span>
               </div>
             ) : (
@@ -240,7 +240,7 @@ function App() {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-3 space-y-3">
         {/* Email Address Card */}
-        <div className="rounded-lg shadow-lg p-3 border hover-lift" style={{ background: 'white', borderColor: '#DBE2EF', animation: 'scaleIn 0.6s ease-out' }}>
+        <div className="rounded-lg shadow-lg p-3 border hover-lift glow-on-hover" style={{ background: 'white', borderColor: '#DBE2EF', animation: 'scaleIn 0.6s ease-out' }}>
           <div className="space-y-2">
             <p className="text-center text-xs font-medium" style={{ color: '#3F72AF' }}>Alamat Email Sementara Anda</p>
             <div className="flex flex-col md:flex-row gap-2">
@@ -253,11 +253,12 @@ function App() {
               />
               <button
                 onClick={handleCopyEmail}
-                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-300 w-full md:w-auto justify-center hover:scale-105"
+                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-smooth w-full md:w-auto justify-center hover-scale"
                 style={{
-                  background: copied ? '#3F72AF' : 'white',
+                  background: copied ? 'linear-gradient(135deg, #3F72AF 0%, #112D4E 100%)' : 'white',
                   color: copied ? 'white' : '#3F72AF',
-                  border: `2px solid ${copied ? '#3F72AF' : '#DBE2EF'}`
+                  border: `2px solid ${copied ? '#3F72AF' : '#DBE2EF'}`,
+                  boxShadow: copied ? '0 4px 12px rgba(63, 114, 175, 0.3)' : 'none'
                 }}
               >
                 {copied ? (
@@ -288,11 +289,12 @@ function App() {
               </button>
               <button
                 onClick={handleCreateNew}
-                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-300 w-full md:w-auto justify-center hover:scale-105"
+                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-smooth w-full md:w-auto justify-center hover-scale glow-on-hover"
                 style={{
-                  background: '#3F72AF',
+                  background: 'linear-gradient(135deg, #3F72AF 0%, #112D4E 100%)',
                   color: 'white',
-                  border: '2px solid #112D4E'
+                  border: '2px solid #112D4E',
+                  boxShadow: '0 4px 12px rgba(63, 114, 175, 0.2)'
                 }}
               >
                 <Mail className="w-4 h-4" />
@@ -319,7 +321,7 @@ function App() {
                 {emails.length}
               </span>
             </div>
-            <div className="divide-y max-h-[350px] overflow-y-auto" style={{ borderColor: '#DBE2EF' }}>
+            <div className="divide-y email-detail-container" style={{ borderColor: '#DBE2EF', maxHeight: '450px', minHeight: '450px' }}>
               {emails.length === 0 ? (
                 <div className="p-4 text-center">
                   <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2" style={{ background: '#DBE2EF' }}>
@@ -374,7 +376,7 @@ function App() {
                 {selectedEmail ? 'Detail Email' : 'Pilih Email'}
               </h2>
             </div>
-            <div className="p-3 max-h-[350px] overflow-y-auto">
+            <div className="p-3 email-detail-container">
               {selectedEmail ? (
                 <div className="space-y-2">
                   <div className="p-2 rounded-lg border" style={{ background: '#F9F7F7', borderColor: '#DBE2EF' }}>
@@ -419,19 +421,21 @@ function App() {
                     <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: '#112D4E' }}>
                       Isi Email
                     </label>
-                    {selectedEmail.bodyHtml ? (
-                      <div
-                        className="max-w-none p-2 rounded-lg text-sm"
-                        style={{ background: '#F9F7F7' }}
-                        dangerouslySetInnerHTML={{ __html: selectedEmail.bodyHtml }}
-                      />
-                    ) : (
-                      <div className="p-2 rounded-lg" style={{ background: '#F9F7F7' }}>
-                        <pre className="text-sm whitespace-pre-wrap font-sans" style={{ color: '#112D4E' }}>
-                          {selectedEmail.bodyText || '(Email kosong)'}
-                        </pre>
-                      </div>
-                    )}
+                    <div className="email-content-wrapper">
+                      {selectedEmail.bodyHtml ? (
+                        <div
+                          className="max-w-none p-2 rounded-lg text-sm"
+                          style={{ background: '#F9F7F7' }}
+                          dangerouslySetInnerHTML={{ __html: selectedEmail.bodyHtml }}
+                        />
+                      ) : (
+                        <div className="p-2 rounded-lg" style={{ background: '#F9F7F7' }}>
+                          <pre className="text-sm whitespace-pre-wrap font-sans" style={{ color: '#112D4E' }}>
+                            {selectedEmail.bodyText || '(Email kosong)'}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   
                   <div className="flex items-center justify-center gap-1.5 px-2 py-1 rounded" style={{ background: 'rgba(63, 114, 175, 0.1)', border: '1px solid #3F72AF' }}>
