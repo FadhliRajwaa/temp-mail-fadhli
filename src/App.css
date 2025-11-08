@@ -196,15 +196,143 @@ button:active::before {
   word-break: break-word;
 }
 
+/* ========== NORMALIZE EMAIL HTML CONTENT ========== */
+/* CRITICAL: Override semua styling dari email senders! */
+
+.email-content-wrapper * {
+  max-width: 100% !important;
+}
+
 .email-content-wrapper img {
-  max-width: 100%;
-  height: auto;
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0.5rem 0;
 }
 
 .email-content-wrapper table {
-  max-width: 100%;
+  max-width: 100% !important;
   overflow-x: auto;
   display: block;
+  font-size: 0.875rem !important;
+}
+
+/* Force normal font sizes - Override inline styles! */
+.email-content-wrapper h1 {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin: 0.75rem 0 !important;
+  line-height: 1.5 !important;
+  color: #112D4E !important;
+}
+
+.email-content-wrapper h2 {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  margin: 0.5rem 0 !important;
+  line-height: 1.5 !important;
+  color: #112D4E !important;
+}
+
+.email-content-wrapper h3 {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  margin: 0.5rem 0 !important;
+  line-height: 1.5 !important;
+  color: #3F72AF !important;
+}
+
+.email-content-wrapper h4,
+.email-content-wrapper h5,
+.email-content-wrapper h6 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin: 0.5rem 0 !important;
+  line-height: 1.5 !important;
+  color: #3F72AF !important;
+}
+
+.email-content-wrapper p {
+  font-size: 0.875rem !important;
+  line-height: 1.6 !important;
+  margin: 0.5rem 0 !important;
+  color: #112D4E !important;
+}
+
+.email-content-wrapper span,
+.email-content-wrapper div {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+.email-content-wrapper a {
+  color: #3F72AF !important;
+  text-decoration: underline !important;
+  font-size: inherit !important;
+  word-break: break-all;
+}
+
+.email-content-wrapper button,
+.email-content-wrapper .button {
+  max-width: 250px !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  margin: 0.5rem 0 !important;
+  display: inline-block;
+}
+
+/* Code blocks */
+.email-content-wrapper code,
+.email-content-wrapper pre {
+  font-size: 0.75rem !important;
+  background: #F9F7F7 !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 4px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Lists */
+.email-content-wrapper ul,
+.email-content-wrapper ol {
+  font-size: 0.875rem !important;
+  margin: 0.5rem 0 !important;
+  padding-left: 1.5rem !important;
+}
+
+.email-content-wrapper li {
+  font-size: inherit !important;
+  margin: 0.25rem 0 !important;
+}
+
+/* Blockquotes */
+.email-content-wrapper blockquote {
+  font-size: 0.875rem !important;
+  border-left: 3px solid #3F72AF !important;
+  padding-left: 1rem !important;
+  margin: 0.5rem 0 !important;
+  color: #3F72AF !important;
+}
+
+/* Strong/Bold text */
+.email-content-wrapper strong,
+.email-content-wrapper b {
+  font-weight: 600 !important;
+  font-size: inherit !important;
+}
+
+/* HR */
+.email-content-wrapper hr {
+  border: none !important;
+  border-top: 1px solid #DBE2EF !important;
+  margin: 1rem 0 !important;
+}
+
+/* Center alignment override */
+.email-content-wrapper [align="center"],
+.email-content-wrapper [style*="text-align: center"],
+.email-content-wrapper [style*="text-align:center"] {
+  text-align: center !important;
 }
 
 /* ========== LOADING STATES ========== */
