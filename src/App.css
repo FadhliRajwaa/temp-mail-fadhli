@@ -194,6 +194,9 @@ button:active::before {
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
+  font-size: 0.875rem; /* Base font size fallback */
+  line-height: 1.6;
+  color: #112D4E;
 }
 
 /* ========== NORMALIZE EMAIL HTML CONTENT ========== */
@@ -263,6 +266,12 @@ button:active::before {
 .email-content-wrapper div {
   font-size: inherit !important;
   line-height: inherit !important;
+  color: inherit !important;
+}
+
+/* Ensure divs inside wrapper have minimum visibility */
+.email-content-wrapper > div {
+  min-height: 1em;
 }
 
 .email-content-wrapper a {
