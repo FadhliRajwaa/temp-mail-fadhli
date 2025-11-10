@@ -199,38 +199,41 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #F9F7F7 0%, #DBE2EF 100%)' }}>
-        <div className="text-center rounded-xl shadow-lg p-6 border" style={{ background: 'white', borderColor: '#DBE2EF' }}>
-          <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#3F72AF' }}></div>
-          <Mail className="w-8 h-8 mx-auto mb-2" style={{ color: '#3F72AF' }} />
-          <p className="text-sm font-bold mb-1" style={{ color: '#112D4E' }}>Menghubungkan...</p>
-          <p className="text-xs" style={{ color: '#3F72AF' }}>Mohon tunggu</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+        <div className="text-center rounded-2xl shadow-2xl p-8 glass" style={{ background: 'rgba(255, 255, 255, 0.95)' }}>
+          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <Mail className="w-12 h-12 mx-auto mb-3 text-purple-600" />
+          <p className="text-lg font-bold mb-1 text-gray-800">Connecting...</p>
+          <p className="text-sm text-gray-600">Please wait a moment</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #F9F7F7 0%, #DBE2EF 100%)' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       {/* Header */}
-      <header className="glass-dark shadow-lg sticky top-0 z-50 border-b animate-fadeIn" style={{ borderBottomColor: '#3F72AF', animation: 'fadeIn 0.5s ease-out' }}>
-        <div className="max-w-6xl mx-auto px-4 py-3">
+      <header className="glass-dark shadow-2xl sticky top-0 z-50 border-b animate-fadeIn backdrop-blur-lg" style={{ borderBottomColor: 'rgba(255, 255, 255, 0.1)', animation: 'fadeIn 0.5s ease-out' }}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg glow-on-hover" style={{ background: 'linear-gradient(135deg, #3F72AF 0%, #112D4E 100%)' }}>
-                <Mail className="w-5 h-5 text-white" />
+              <div className="p-2.5 rounded-xl glow-on-hover shadow-lg" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                <Mail className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-lg font-bold text-white gradient-text" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #DBE2EF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Temp Mail</h1>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-white">Temp Mail</h1>
+                <p className="text-xs text-purple-200 hidden sm:block">Secure Temporary Email Service</p>
+              </div>
             </div>
             {isConnected ? (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(63, 114, 175, 0.2)', border: '1px solid #3F72AF' }}>
-                <div className="w-2 h-2 rounded-full pulse-dot" style={{ background: '#3F72AF' }}></div>
-                <span className="text-xs font-semibold text-white hidden sm:inline">Online</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full glass" style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+                <div className="w-2.5 h-2.5 rounded-full pulse-dot" style={{ background: '#22c55e' }}></div>
+                <span className="text-xs sm:text-sm font-semibold text-green-300">Connected</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444' }}>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full glass" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
                 <AlertCircle className="w-4 h-4 text-red-400" />
-                <span className="text-xs font-semibold text-red-200 hidden sm:inline">Offline</span>
+                <span className="text-xs sm:text-sm font-semibold text-red-300">Offline</span>
               </div>
             )}
           </div>
@@ -238,129 +241,131 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-3 space-y-3">
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Email Address Card */}
-        <div className="rounded-lg shadow-lg p-3 border hover-lift glow-on-hover" style={{ background: 'white', borderColor: '#DBE2EF', animation: 'scaleIn 0.6s ease-out' }}>
-          <div className="space-y-2">
-            <p className="text-center text-xs font-medium" style={{ color: '#3F72AF' }}>Alamat Email Sementara Anda</p>
-            <div className="flex flex-col md:flex-row gap-2">
+        <div className="rounded-2xl shadow-2xl p-6 glass hover-lift" style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', animation: 'scaleIn 0.6s ease-out' }}>
+          <div className="space-y-4">
+            <div className="text-center">
+              <h2 className="text-lg font-bold mb-1" style={{ color: '#764ba2' }}>Your Temporary Email Address</h2>
+              <p className="text-sm text-gray-600">Use this email for registrations and verifications</p>
+            </div>
+            <div className="flex flex-col lg:flex-row gap-3">
               <input
                 type="text"
                 value={emailAddress}
                 readOnly
-                className="flex-1 min-w-0 px-3 py-2 text-sm font-mono font-semibold rounded-lg border focus:outline-none text-center md:text-left"
-                style={{ background: '#F9F7F7', color: '#112D4E', borderColor: '#DBE2EF' }}
+                className="flex-1 min-w-0 px-4 py-3 text-base sm:text-lg font-mono font-bold rounded-xl border-2 focus:outline-none text-center lg:text-left shadow-inner"
+                style={{ background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)', color: '#374151', borderColor: '#9ca3af' }}
               />
-              <button
-                onClick={handleCopyEmail}
-                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-smooth w-full md:w-auto justify-center hover-scale"
-                style={{
-                  background: copied ? 'linear-gradient(135deg, #3F72AF 0%, #112D4E 100%)' : 'white',
-                  color: copied ? 'white' : '#3F72AF',
-                  border: `2px solid ${copied ? '#3F72AF' : '#DBE2EF'}`,
-                  boxShadow: copied ? '0 4px 12px rgba(63, 114, 175, 0.3)' : 'none'
-                }}
-              >
-                {copied ? (
-                  <>
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Tersalin!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    <span>Salin</span>
-                  </>
-                )}
-              </button>
-              <button
-                onClick={handleRefreshInbox}
-                disabled={refreshing}
-                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all duration-200 w-full md:w-auto justify-center hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  background: refreshing ? '#3F72AF' : '#DBE2EF',
-                  color: refreshing ? 'white' : '#112D4E',
-                  border: '2px solid #3F72AF'
-                }}
-                title={refreshing ? 'Memuat...' : 'Refresh inbox'}
-              >
-                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                <span>{refreshing ? 'Memuat...' : 'Refresh'}</span>
-              </button>
-              <button
-                onClick={handleCreateNew}
-                className="px-3 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-smooth w-full md:w-auto justify-center hover-scale glow-on-hover"
-                style={{
-                  background: 'linear-gradient(135deg, #3F72AF 0%, #112D4E 100%)',
-                  color: 'white',
-                  border: '2px solid #112D4E',
-                  boxShadow: '0 4px 12px rgba(63, 114, 175, 0.2)'
-                }}
-              >
-                <Mail className="w-4 h-4" />
-                <span>Buat Baru</span>
-              </button>
+              <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                <button
+                  onClick={handleCopyEmail}
+                  className="px-5 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  style={{
+                    background: copied ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    minWidth: '120px'
+                  }}
+                >
+                  {copied ? (
+                    <>
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-5 h-5" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={handleRefreshInbox}
+                  disabled={refreshing}
+                  className="px-5 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                    color: 'white',
+                    minWidth: '120px'
+                  }}
+                  title={refreshing ? 'Loading...' : 'Refresh inbox'}
+                >
+                  <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
+                  <span>{refreshing ? 'Loading...' : 'Refresh'}</span>
+                </button>
+                <button
+                  onClick={handleCreateNew}
+                  className="px-5 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  style={{
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    color: 'white',
+                    minWidth: '120px'
+                  }}
+                >
+                  <Mail className="w-5 h-5" />
+                  <span>New Email</span>
+                </button>
+              </div>
             </div>
-            <div className="flex items-center justify-center gap-2 text-xs px-2 py-1 rounded" style={{ background: 'rgba(63,114,175,0.08)', border: '1px solid #3F72AF', color: '#3F72AF' }}>
-              <Clock className="w-3.5 h-3.5" />
-              <span>Auto-hapus 15 menit</span>
+            <div className="flex items-center justify-center gap-2 text-sm px-4 py-2 rounded-lg glass" style={{ background: 'rgba(147, 51, 234, 0.1)', border: '1px solid rgba(147, 51, 234, 0.3)' }}>
+              <Clock className="w-4 h-4 text-purple-600" />
+              <span className="text-purple-700 font-medium">Auto-delete after 15 minutes</span>
             </div>
           </div>
         </div>
 
         {/* Email List and Detail */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Inbox List */}
-          <div className="lg:col-span-1 rounded-lg shadow-lg overflow-hidden border" style={{ background: 'white', borderColor: '#DBE2EF', animation: 'slideInFromLeft 0.7s ease-out' }}>
-            <div className="px-3 py-2 flex items-center justify-between" style={{ background: '#3F72AF' }}>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Inbox className="w-4 h-4" />
+          <div className="xl:col-span-1 rounded-2xl shadow-2xl overflow-hidden glass" style={{ background: 'rgba(255, 255, 255, 0.95)', animation: 'slideInFromLeft 0.7s ease-out' }}>
+            <div className="px-4 py-3 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <Inbox className="w-5 h-5" />
                 Inbox
               </h2>
-              <span className="px-2 py-1 rounded-full text-xs font-semibold" style={{ background: 'rgba(255, 255, 255, 0.3)', color: 'white' }}>
-                {emails.length}
+              <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'rgba(255, 255, 255, 0.25)', color: 'white' }}>
+                {emails.length} {emails.length === 1 ? 'Email' : 'Emails'}
               </span>
             </div>
-            <div className="divide-y email-detail-container" style={{ borderColor: '#DBE2EF', maxHeight: '450px', minHeight: '450px' }}>
+            <div className="divide-y divide-gray-100" style={{ maxHeight: '600px', minHeight: '400px', overflowY: 'auto' }}>
               {emails.length === 0 ? (
-                <div className="p-4 text-center">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2" style={{ background: '#DBE2EF' }}>
-                    <Mail className="w-6 h-6" style={{ color: '#3F72AF' }} />
+                <div className="p-8 text-center">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)' }}>
+                    <Mail className="w-8 h-8 text-indigo-600" />
                   </div>
-                  <p className="text-sm font-bold mb-1" style={{ color: '#112D4E' }}>Belum Ada Email</p>
-                  <p className="text-xs" style={{ color: '#3F72AF' }}>Email akan muncul real-time</p>
+                  <p className="text-base font-bold mb-2 text-gray-800">No Emails Yet</p>
+                  <p className="text-sm text-gray-600">Emails will appear here in real-time</p>
                 </div>
               ) : (
                 emails.map((email, index) => (
                   <div
                     key={email.id}
                     onClick={() => setSelectedEmail(email)}
-                    className={`email-card p-3 cursor-pointer transition-all duration-300 border-l-4 hover-lift ${
-                      selectedEmail?.id === email.id ? '' : 'border-transparent'
+                    className={`email-card p-4 cursor-pointer transition-all duration-300 hover:bg-purple-50 border-l-4 ${
+                      selectedEmail?.id === email.id ? 'bg-gradient-to-r from-purple-50 to-indigo-50' : ''
                     }`}
                     style={{ 
-                      borderLeftColor: selectedEmail?.id === email.id ? '#3F72AF' : 'transparent',
-                      background: selectedEmail?.id === email.id ? '#F9F7F7' : 'transparent',
-                      animationDelay: `${index * 0.1}s`
+                      borderLeftColor: selectedEmail?.id === email.id ? '#764ba2' : 'transparent',
+                      animationDelay: `${index * 0.05}s`
                     }}
                   >
-                    <div className="flex justify-between items-start mb-1">
-                      <p className="font-semibold text-xs truncate flex-1" style={{ color: '#112D4E' }}>
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-bold text-sm text-gray-800 truncate flex-1 pr-2">
                         {email.from}
                       </p>
-                      <span className="text-xs ml-2 shrink-0" style={{ color: '#3F72AF' }}>
+                      <span className="text-xs text-purple-600 font-medium shrink-0">
                         {formatDate(email.receivedAt)}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold truncate mb-1" style={{ color: '#112D4E' }}>
-                      {email.subject}
+                    <p className="text-base font-semibold text-gray-900 truncate mb-2">
+                      {email.subject || '(No Subject)'}
                     </p>
-                    <p className="text-xs truncate mb-2" style={{ color: '#3F72AF' }}>
-                      {email.bodyText.substring(0, 50)}...
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                      {email.bodyText || 'Empty message'}
                     </p>
-                    <div className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded" style={{ background: 'rgba(63, 114, 175, 0.1)', color: '#3F72AF' }}>
-                      <Clock className="w-3 h-3" />
-                      <span>{getExpiryTime(email.expiresAt)}</span>
+                    <div className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full" style={{ background: 'rgba(147, 51, 234, 0.1)' }}>
+                      <Clock className="w-3.5 h-3.5 text-purple-600" />
+                      <span className="text-purple-700 font-medium">{getExpiryTime(email.expiresAt)}</span>
                     </div>
                   </div>
                 ))
@@ -369,47 +374,50 @@ function App() {
           </div>
 
           {/* Email Detail */}
-          <div className="lg:col-span-2 rounded-lg shadow-lg overflow-hidden border" style={{ background: 'white', borderColor: '#DBE2EF', animation: 'slideInFromRight 0.7s ease-out' }}>
-            <div className="px-3 py-2 flex items-center gap-2" style={{ background: '#112D4E' }}>
-              <Mail className="w-4 h-4 text-white" />
-              <h2 className="text-sm font-bold text-white">
-                {selectedEmail ? 'Detail Email' : 'Pilih Email'}
+          <div className="xl:col-span-2 rounded-2xl shadow-2xl overflow-hidden glass" style={{ background: 'rgba(255, 255, 255, 0.95)', animation: 'slideInFromRight 0.7s ease-out' }}>
+            <div className="px-4 py-3 flex items-center gap-2" style={{ background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)' }}>
+              <Mail className="w-5 h-5 text-white" />
+              <h2 className="text-base font-bold text-white">
+                {selectedEmail ? 'Email Details' : 'Select an Email'}
               </h2>
             </div>
-            <div className="p-3 email-detail-container">
+            <div className="p-4 sm:p-6" style={{ maxHeight: '600px', overflowY: 'auto' }}>
               {selectedEmail ? (
-                <div className="space-y-2">
-                  <div className="p-2 rounded-lg border" style={{ background: '#F9F7F7', borderColor: '#DBE2EF' }}>
-                    <label className="text-xs font-semibold uppercase mb-0.5 block" style={{ color: '#3F72AF' }}>
-                      Dari
-                    </label>
-                    <p className="text-sm font-medium" style={{ color: '#112D4E' }}>{selectedEmail.from}</p>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-xl glass" style={{ background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)' }}>
+                      <label className="text-xs font-bold uppercase text-purple-600 mb-1 block">
+                        From
+                      </label>
+                      <p className="text-sm font-semibold text-gray-800 break-all">{selectedEmail.from}</p>
+                    </div>
+                    
+                    <div className="p-4 rounded-xl glass" style={{ background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)' }}>
+                      <label className="text-xs font-bold uppercase text-purple-600 mb-1 block">
+                        To
+                      </label>
+                      <p className="text-sm font-semibold text-gray-800 break-all">{selectedEmail.to}</p>
+                    </div>
                   </div>
                   
-                  <div className="p-2 rounded-lg border" style={{ background: '#F9F7F7', borderColor: '#DBE2EF' }}>
-                    <label className="text-xs font-semibold uppercase mb-0.5 block" style={{ color: '#3F72AF' }}>
-                      Kepada
-                    </label>
-                    <p className="text-sm font-medium" style={{ color: '#112D4E' }}>{selectedEmail.to}</p>
-                  </div>
-                  
-                  <div className="p-2 rounded-lg border" style={{ background: '#DBE2EF', borderColor: '#3F72AF' }}>
-                    <label className="text-xs font-semibold uppercase mb-0.5 block" style={{ color: '#112D4E' }}>
+                  <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)' }}>
+                    <label className="text-xs font-bold uppercase text-indigo-700 mb-1 block">
                       Subject
                     </label>
-                    <p className="text-sm font-bold" style={{ color: '#112D4E' }}>
-                      {selectedEmail.subject}
+                    <p className="text-base font-bold text-gray-900 break-words">
+                      {selectedEmail.subject || '(No Subject)'}
                     </p>
                   </div>
                   
-                  <div className="p-2 rounded-lg border" style={{ background: '#F9F7F7', borderColor: '#DBE2EF' }}>
-                    <label className="text-xs font-semibold uppercase mb-0.5 block" style={{ color: '#3F72AF' }}>
-                      Tanggal
+                  <div className="p-4 rounded-xl glass" style={{ background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' }}>
+                    <label className="text-xs font-bold uppercase text-amber-700 mb-1 block">
+                      Received
                     </label>
-                    <p className="text-sm font-medium" style={{ color: '#112D4E' }}>
-                      {new Date(selectedEmail.receivedAt).toLocaleString('id-ID', {
-                        day: '2-digit',
+                    <p className="text-sm font-semibold text-gray-800">
+                      {new Date(selectedEmail.receivedAt).toLocaleString('en-US', {
+                        weekday: 'short',
                         month: 'short',
+                        day: '2-digit',
                         year: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit'
@@ -417,41 +425,40 @@ function App() {
                     </p>
                   </div>
                   
-                  <div className="border rounded-lg p-2" style={{ borderColor: '#DBE2EF' }}>
-                    <label className="text-xs font-semibold uppercase mb-1 block" style={{ color: '#112D4E' }}>
-                      Isi Email
-                    </label>
-                    <div className="email-content-wrapper">
+                  <div className="rounded-xl overflow-hidden shadow-inner" style={{ background: 'white', border: '1px solid #e5e7eb' }}>
+                    <div className="px-4 py-3" style={{ background: 'linear-gradient(90deg, #f9fafb 0%, #f3f4f6 100%)' }}>
+                      <label className="text-sm font-bold text-gray-700">
+                        Email Content
+                      </label>
+                    </div>
+                    <div className="p-4 sm:p-6" style={{ maxHeight: '400px', overflowY: 'auto', background: '#ffffff' }}>
                       {selectedEmail.bodyHtml ? (
                         <div
-                          className="max-w-none p-2 rounded-lg text-sm"
-                          style={{ background: '#F9F7F7' }}
+                          className="email-content-wrapper prose prose-sm max-w-none"
                           dangerouslySetInnerHTML={{ __html: selectedEmail.bodyHtml }}
                         />
                       ) : (
-                        <div className="p-2 rounded-lg" style={{ background: '#F9F7F7' }}>
-                          <pre className="text-sm whitespace-pre-wrap font-sans" style={{ color: '#112D4E' }}>
-                            {selectedEmail.bodyText || '(Email kosong)'}
-                          </pre>
-                        </div>
+                        <pre className="whitespace-pre-wrap font-sans text-sm text-gray-800 leading-relaxed">
+                          {selectedEmail.bodyText || '(Empty message)'}
+                        </pre>
                       )}
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-center gap-1.5 px-2 py-1 rounded" style={{ background: 'rgba(63, 114, 175, 0.1)', border: '1px solid #3F72AF' }}>
-                    <Clock className="w-3.5 h-3.5" style={{ color: '#3F72AF' }} />
-                    <span className="text-xs font-medium" style={{ color: '#112D4E' }}>
-                      Hapus {getExpiryTime(selectedEmail.expiresAt)}
+                  <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                    <span className="text-sm font-medium text-red-700">
+                      Auto-deletes {getExpiryTime(selectedEmail.expiresAt)}
                     </span>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2" style={{ background: '#DBE2EF' }}>
-                    <Mail className="w-6 h-6" style={{ color: '#3F72AF' }} />
+                <div className="flex flex-col items-center justify-center py-16">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4" style={{ background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)' }}>
+                    <Inbox className="w-10 h-10 text-indigo-600" />
                   </div>
-                  <p className="text-sm font-bold mb-1" style={{ color: '#112D4E' }}>Pilih email</p>
-                  <p className="text-xs" style={{ color: '#3F72AF' }}>Klik untuk detail</p>
+                  <p className="text-lg font-bold mb-2 text-gray-800">No Email Selected</p>
+                  <p className="text-sm text-gray-600">Click on an email to view its details</p>
                 </div>
               )}
             </div>
@@ -459,34 +466,40 @@ function App() {
         </div>
 
         {/* Info Card */}
-        <div className="rounded-lg shadow-lg p-3 border" style={{ background: '#3F72AF', borderColor: '#112D4E' }}>
-          <h3 className="text-sm font-bold text-white mb-2">Cara Menggunakan</h3>
-          <ul className="space-y-1.5 text-white text-xs">
-            <li className="flex items-start gap-2">
-              <span className="font-bold shrink-0">1.</span>
-              <span>Salin alamat email dan gunakan untuk registrasi</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold shrink-0">2.</span>
-              <span>Email masuk akan muncul secara real-time</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold shrink-0">3.</span>
-              <span>Semua email akan terhapus otomatis setelah 15 menit</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold shrink-0">4.</span>
-              <span>Klik "Buat Baru" untuk mendapatkan alamat email berbeda</span>
-            </li>
-          </ul>
+        <div className="rounded-2xl shadow-2xl p-6 glass" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <AlertCircle className="w-5 h-5" />
+            How to Use
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="flex gap-3 p-3 rounded-lg" style={{ background: 'rgba(255, 255, 255, 0.1)' }}>
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-white font-bold shrink-0" style={{ background: 'rgba(255, 255, 255, 0.2)' }}>1</span>
+              <span className="text-white text-sm">Copy the email address for registrations</span>
+            </div>
+            <div className="flex gap-3 p-3 rounded-lg" style={{ background: 'rgba(255, 255, 255, 0.1)' }}>
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-white font-bold shrink-0" style={{ background: 'rgba(255, 255, 255, 0.2)' }}>2</span>
+              <span className="text-white text-sm">Incoming emails appear in real-time</span>
+            </div>
+            <div className="flex gap-3 p-3 rounded-lg" style={{ background: 'rgba(255, 255, 255, 0.1)' }}>
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-white font-bold shrink-0" style={{ background: 'rgba(255, 255, 255, 0.2)' }}>3</span>
+              <span className="text-white text-sm">All emails auto-delete after 15 minutes</span>
+            </div>
+            <div className="flex gap-3 p-3 rounded-lg" style={{ background: 'rgba(255, 255, 255, 0.1)' }}>
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-white font-bold shrink-0" style={{ background: 'rgba(255, 255, 255, 0.2)' }}>4</span>
+              <span className="text-white text-sm">Click "New Email" for a different address</span>
+            </div>
+          </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-2 mt-4" style={{ background: '#112D4E', borderTopColor: '#3F72AF' }}>
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-xs font-medium" style={{ color: '#DBE2EF' }}>
-            © 2026 Temp Mail | Dibuat oleh Fadhli
+      <footer className="mt-8 py-6 glass-dark border-t" style={{ borderTopColor: 'rgba(255, 255, 255, 0.1)' }}>
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-sm font-medium text-purple-200">
+            © 2024 Temp Mail Service
+          </p>
+          <p className="text-xs text-purple-300 mt-1">
+            Secure • Fast • Anonymous
           </p>
         </div>
       </footer>

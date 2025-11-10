@@ -1,6 +1,6 @@
 /* =============================================
-   TEMP MAIL - MODERN & INTERACTIVE STYLES
-   Upgraded with glassmorphism & micro-interactions
+   TEMP MAIL - PREMIUM MODERN STYLES
+   Responsive Design with Enhanced Content Handling
    ============================================= */
 
 /* ========== ANIMATIONS ========== */
@@ -145,15 +145,17 @@ button:active::before {
 
 .glass {
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }
 
 .glass-dark {
-  background: rgba(17, 45, 78, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(103, 126, 234, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
 }
 
 /* ========== CUSTOM SCROLLBAR ========== */
@@ -413,16 +415,72 @@ button:active::before {
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
-/* ========== RESPONSIVE TWEAKS ========== */
+/* ========== RESPONSIVE DESIGN ========== */
 
-@media (max-width: 768px) {
+/* Mobile First Approach */
+@media (max-width: 640px) {
   .hover-lift:hover {
     transform: none;
   }
   
   .email-detail-container {
-    max-height: 400px;
+    max-height: 350px;
+    min-height: 300px;
+  }
+  
+  .email-content-wrapper {
+    font-size: 0.875rem;
+  }
+  
+  /* Stack buttons vertically on mobile */
+  .flex-wrap {
+    flex-direction: column;
+  }
+  
+  /* Full width buttons on mobile */
+  button {
+    width: 100%;
+  }
+  
+  /* Reduce padding on mobile */
+  .p-6 {
+    padding: 1rem;
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .email-detail-container {
+    max-height: 450px;
     min-height: 400px;
+  }
+  
+  .container {
+    max-width: 100%;
+    padding: 0 1.5rem;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  .email-detail-container {
+    max-height: 600px;
+    min-height: 500px;
+  }
+  
+  .container {
+    max-width: 1280px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  .email-detail-container {
+    max-height: 700px;
   }
 }
 
@@ -438,4 +496,86 @@ input:focus-visible {
 
 .transition-smooth {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========== ENHANCED CONTENT HANDLING ========== */
+
+/* Line clamp utilities for email preview */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Better word breaking for long content */
+.break-words {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Improved prose styling for email content */
+.prose {
+  max-width: 100%;
+  color: #374151;
+  line-height: 1.75;
+}
+
+.prose h1 { font-size: 1.875rem; font-weight: 700; margin: 1rem 0; }
+.prose h2 { font-size: 1.5rem; font-weight: 700; margin: 0.875rem 0; }
+.prose h3 { font-size: 1.25rem; font-weight: 600; margin: 0.75rem 0; }
+.prose p { margin: 0.75rem 0; }
+.prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; }
+.prose li { margin: 0.25rem 0; }
+.prose blockquote { 
+  border-left: 4px solid #667eea; 
+  padding-left: 1rem; 
+  margin: 1rem 0;
+  font-style: italic;
+}
+.prose code {
+  background: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+.prose pre {
+  background: #1f2937;
+  color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+/* Improved table responsiveness */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+.prose th {
+  background: #f3f4f6;
+  padding: 0.5rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #e5e7eb;
+}
+.prose td {
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
 }
