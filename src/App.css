@@ -69,10 +69,30 @@
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(63, 114, 175, 0.3);
+    box-shadow: 0 0 20px rgba(140, 0, 255, 0.4);
   }
   50% {
-    box-shadow: 0 0 30px rgba(63, 114, 175, 0.6);
+    box-shadow: 0 0 40px rgba(255, 63, 127, 0.6);
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -152,32 +172,40 @@ button:active::before {
 }
 
 .glass-dark {
-  background: rgba(103, 126, 234, 0.85);
+  background: rgba(69, 6, 147, 0.85);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
 }
 
+.glass-modern {
+  background: rgba(69, 6, 147, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 15px 35px 0 rgba(140, 0, 255, 0.3);
+}
+
 /* ========== CUSTOM SCROLLBAR ========== */
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F9F7F7;
+  background: #f0f0f0;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #3F72AF, #112D4E);
+  background: linear-gradient(180deg, #8C00FF, #FF3F7F);
   border-radius: 10px;
-  transition: background 0.3s;
+  transition: all 0.3s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #112D4E;
+  background: linear-gradient(180deg, #450693, #FFC400);
+  box-shadow: 0 0 10px rgba(140, 0, 255, 0.5);
 }
 
 /* ========== EMAIL CONTENT CONTAINER FIX ========== */
