@@ -14,6 +14,7 @@ import './App.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 const EMAIL_DOMAIN = import.meta.env.VITE_EMAIL_DOMAIN || 'domain-saya.my.id';
+const AUTO_REFRESH_INTERVAL = 30000; // Auto-refresh every 30 seconds
 
 function App() {
   // States
@@ -24,9 +25,11 @@ function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now());
   
   // Refs
   const socketRef = useRef(null);
+  const autoRefreshIntervalRef = useRef(null);
 
   // Generate random email address (no dashes)
   const generateEmailAddress = () => {
@@ -50,11 +53,14 @@ function App() {
       localStorage.setItem('tempMailAddress', newEmail);
     }
 
-    // Setup Socket.io connection
+    // Setup Socket.io connection with better options
     socketRef.current = io(BACKEND_URL, {
       transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000
     });
 
     const socket = socketRef.current;
@@ -67,6 +73,10 @@ function App() {
       
       // Join room for this email
       socket.emit('join-room', newEmail);
+      console.log(`📧 Joined room: ${newEmail}`);
+      
+      // Fetch initial emails after connecting
+      handleInitialFetch(newEmail);
     });
 
     socket.on('disconnect', () => {
@@ -74,28 +84,55 @@ function App() {
       setIsConnected(false);
     });
 
+    socket.on('reconnect', (attemptNumber) => {
+      console.log(`🔄 Reconnected after ${attemptNumber} attempts`);
+      setIsConnected(true);
+      // Rejoin room after reconnection
+      socket.emit('join-room', newEmail);
+      // Refresh emails after reconnection
+      handleInitialFetch(newEmail);
+    });
+
     socket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
+      console.error('Connection error:', error.message);
       setIsConnected(false);
       setLoading(false);
     });
 
-    // Email events
+    // Email events - listen for multiple event names for compatibility
     socket.on('email-history', (history) => {
       console.log('📧 Received email history:', history);
       setEmails(history);
     });
 
+    // Mailgun webhook event
     socket.on('new-email', (email) => {
-      console.log('📬 New email received:', email);
-      setEmails((prev) => [email, ...prev]);
+      console.log('📬 New email received (Mailgun):', email);
+      setEmails((prev) => {
+        // Check if email already exists
+        const exists = prev.some(e => e.id === email.id);
+        if (exists) return prev;
+        return [email, ...prev];
+      });
       
       // Show notification
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Email Baru!', {
-          body: `Dari: ${email.from}\nSubject: ${email.subject}`,
-          icon: '/mail-icon.png'
+      showEmailNotification(email);
+    });
+
+    // SendGrid webhook event (global broadcast)
+    socket.on('newEmail', (email) => {
+      console.log('📬 New email received (SendGrid):', email);
+      // Only add if it's for our email address
+      if (email.to && email.to.toLowerCase() === newEmail.toLowerCase()) {
+        setEmails((prev) => {
+          // Check if email already exists
+          const exists = prev.some(e => e.id === email.id);
+          if (exists) return prev;
+          return [email, ...prev];
         });
+        
+        // Show notification
+        showEmailNotification(email);
       }
     });
 
@@ -108,18 +145,67 @@ function App() {
       Notification.requestPermission();
     }
 
+    // Setup auto-refresh interval
+    autoRefreshIntervalRef.current = setInterval(() => {
+      if (socketRef.current && socketRef.current.connected) {
+        console.log('⏰ Auto-refresh triggered');
+        handleInitialFetch(newEmail);
+        setLastRefreshTime(Date.now());
+      }
+    }, AUTO_REFRESH_INTERVAL);
+
     // Cleanup
     return () => {
       if (socket) {
         socket.emit('leave-room', newEmail);
         socket.disconnect();
       }
+      if (autoRefreshIntervalRef.current) {
+        clearInterval(autoRefreshIntervalRef.current);
+      }
     };
   }, []);
 
+  // Helper function to fetch initial emails
+  const handleInitialFetch = async (email) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/emails/${email}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setEmails(data.emails || []);
+          console.log(`📧 Loaded ${data.emails?.length || 0} emails`);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching initial emails:', error);
+    }
+  };
+
+  // Helper function to show notification
+  const showEmailNotification = (email) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('📧 New Email Received!', {
+        body: `From: ${email.from}\nSubject: ${email.subject || '(No Subject)'}`,
+        icon: '/mail-icon.png',
+        tag: email.id,
+        requireInteraction: false
+      });
+    }
+  };
+
   // Handle create new email
   const handleCreateNew = () => {
+    const oldEmail = emailAddress;
     const newEmail = generateEmailAddress();
+    
+    // Leave old room first
+    if (socketRef.current && oldEmail) {
+      socketRef.current.emit('leave-room', oldEmail);
+      console.log(`📤 Left room: ${oldEmail}`);
+    }
+    
+    // Update state
     setEmailAddress(newEmail);
     setEmails([]);
     setSelectedEmail(null);
@@ -128,8 +214,12 @@ function App() {
     localStorage.setItem('tempMailAddress', newEmail);
     
     // Join new room
-    if (socketRef.current) {
+    if (socketRef.current && socketRef.current.connected) {
       socketRef.current.emit('join-room', newEmail);
+      console.log(`📧 Joined new room: ${newEmail}`);
+      
+      // Fetch emails for new address (usually empty)
+      handleInitialFetch(newEmail);
     }
   };
 
@@ -138,21 +228,64 @@ function App() {
     if (refreshing) return; // Prevent double click
     
     setRefreshing(true);
+    console.log('🔄 Refreshing inbox...');
+    
     try {
+      // First ensure we're connected and in the right room
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.emit('join-room', emailAddress);
+      }
+      
       // Fetch emails dari server
-      const response = await fetch(`${BACKEND_URL}/api/emails/${emailAddress}`);
+      const response = await fetch(`${BACKEND_URL}/api/emails/${emailAddress}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-cache'
+      });
+      
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setEmails(data.emails || []);
-          console.log('Inbox refreshed');
+          const newEmails = data.emails || [];
+          setEmails(newEmails);
+          setLastRefreshTime(Date.now());
+          console.log(`✅ Inbox refreshed: ${newEmails.length} emails found`);
+          
+          // If new emails were found, show notification
+          if (newEmails.length > emails.length) {
+            const diff = newEmails.length - emails.length;
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('📧 New Emails!', {
+                body: `You have ${diff} new email${diff > 1 ? 's' : ''}`,
+                icon: '/mail-icon.png'
+              });
+            }
+          }
+          
+          // Reset auto-refresh timer
+          if (autoRefreshIntervalRef.current) {
+            clearInterval(autoRefreshIntervalRef.current);
+            autoRefreshIntervalRef.current = setInterval(() => {
+              if (socketRef.current && socketRef.current.connected) {
+                console.log('⏰ Auto-refresh triggered');
+                handleInitialFetch(emailAddress);
+                setLastRefreshTime(Date.now());
+              }
+            }, AUTO_REFRESH_INTERVAL);
+          }
+        } else {
+          console.error('❌ Refresh failed:', data.message);
         }
+      } else {
+        console.error('❌ Refresh failed with status:', response.status);
       }
     } catch (error) {
-      console.error('Error refreshing inbox:', error);
+      console.error('❌ Error refreshing inbox:', error);
     } finally {
-      // Minimum 500ms loading untuk smooth UX
-      setTimeout(() => setRefreshing(false), 500);
+      // Minimum 300ms loading for smooth UX
+      setTimeout(() => setRefreshing(false), 300);
     }
   };
 
@@ -332,11 +465,17 @@ function App() {
                 </button>
               </div>
             </div>
-            <div className="flex items-center justify-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <div className="flex items-center gap-2 px-5 py-3 rounded-full shadow-inner" style={{ background: 'linear-gradient(135deg, rgba(140, 0, 255, 0.1), rgba(255, 63, 127, 0.05))', border: '2px solid #8C00FF' }}>
                 <Clock className="w-5 h-5" style={{ color: '#8C00FF' }} />
                 <span className="font-bold" style={{ color: '#450693' }}>Auto-delete in 15 minutes</span>
               </div>
+              {isConnected && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: 'rgba(255, 196, 0, 0.1)', border: '1px solid #FFC400' }}>
+                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#FFC400' }}></div>
+                  <span className="text-xs font-semibold" style={{ color: '#450693' }}>Live Updates Active</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
