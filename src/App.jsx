@@ -25,7 +25,6 @@ function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now());
   
   // Refs
   const socketRef = useRef(null);
@@ -67,25 +66,21 @@ function App() {
 
     // Connection events
     socket.on('connect', () => {
-      console.log('✅ Connected to server');
       setIsConnected(true);
       setLoading(false);
       
       // Join room for this email
       socket.emit('join-room', newEmail);
-      console.log(`📧 Joined room: ${newEmail}`);
       
       // Fetch initial emails after connecting
       handleInitialFetch(newEmail);
     });
 
     socket.on('disconnect', () => {
-      console.log('❌ Disconnected from server');
       setIsConnected(false);
     });
 
-    socket.on('reconnect', (attemptNumber) => {
-      console.log(`🔄 Reconnected after ${attemptNumber} attempts`);
+    socket.on('reconnect', () => {
       setIsConnected(true);
       // Rejoin room after reconnection
       socket.emit('join-room', newEmail);
@@ -93,21 +88,18 @@ function App() {
       handleInitialFetch(newEmail);
     });
 
-    socket.on('connect_error', (error) => {
-      console.error('Connection error:', error.message);
+    socket.on('connect_error', () => {
       setIsConnected(false);
       setLoading(false);
     });
 
     // Email events - listen for multiple event names for compatibility
     socket.on('email-history', (history) => {
-      console.log('📧 Received email history:', history);
       setEmails(history);
     });
 
     // Mailgun webhook event
     socket.on('new-email', (email) => {
-      console.log('📬 New email received (Mailgun):', email);
       setEmails((prev) => {
         // Check if email already exists
         const exists = prev.some(e => e.id === email.id);
@@ -121,7 +113,6 @@ function App() {
 
     // SendGrid webhook event (global broadcast)
     socket.on('newEmail', (email) => {
-      console.log('📬 New email received (SendGrid):', email);
       // Only add if it's for our email address
       if (email.to && email.to.toLowerCase() === newEmail.toLowerCase()) {
         setEmails((prev) => {
@@ -136,8 +127,8 @@ function App() {
       }
     });
 
-    socket.on('error', (error) => {
-      console.error('Socket error:', error);
+    socket.on('error', () => {
+      // Socket error handled silently
     });
 
     // Request notification permission
@@ -148,9 +139,7 @@ function App() {
     // Setup auto-refresh interval
     autoRefreshIntervalRef.current = setInterval(() => {
       if (socketRef.current && socketRef.current.connected) {
-        console.log('⏰ Auto-refresh triggered');
         handleInitialFetch(newEmail);
-        setLastRefreshTime(Date.now());
       }
     }, AUTO_REFRESH_INTERVAL);
 
@@ -164,7 +153,7 @@ function App() {
         clearInterval(autoRefreshIntervalRef.current);
       }
     };
-  }, []);
+  }, []); // Only run once on mount
 
   // Helper function to fetch initial emails
   const handleInitialFetch = async (email) => {
@@ -174,11 +163,10 @@ function App() {
         const data = await response.json();
         if (data.success) {
           setEmails(data.emails || []);
-          console.log(`📧 Loaded ${data.emails?.length || 0} emails`);
         }
       }
-    } catch (error) {
-      console.error('Error fetching initial emails:', error);
+    } catch {
+      // Error fetching emails - silent fail
     }
   };
 
@@ -202,7 +190,6 @@ function App() {
     // Leave old room first
     if (socketRef.current && oldEmail) {
       socketRef.current.emit('leave-room', oldEmail);
-      console.log(`📤 Left room: ${oldEmail}`);
     }
     
     // Update state
@@ -216,7 +203,6 @@ function App() {
     // Join new room
     if (socketRef.current && socketRef.current.connected) {
       socketRef.current.emit('join-room', newEmail);
-      console.log(`📧 Joined new room: ${newEmail}`);
       
       // Fetch emails for new address (usually empty)
       handleInitialFetch(newEmail);
@@ -228,7 +214,6 @@ function App() {
     if (refreshing) return; // Prevent double click
     
     setRefreshing(true);
-    console.log('🔄 Refreshing inbox...');
     
     try {
       // First ensure we're connected and in the right room
@@ -250,8 +235,6 @@ function App() {
         if (data.success) {
           const newEmails = data.emails || [];
           setEmails(newEmails);
-          setLastRefreshTime(Date.now());
-          console.log(`✅ Inbox refreshed: ${newEmails.length} emails found`);
           
           // If new emails were found, show notification
           if (newEmails.length > emails.length) {
@@ -269,20 +252,14 @@ function App() {
             clearInterval(autoRefreshIntervalRef.current);
             autoRefreshIntervalRef.current = setInterval(() => {
               if (socketRef.current && socketRef.current.connected) {
-                console.log('⏰ Auto-refresh triggered');
                 handleInitialFetch(emailAddress);
-                setLastRefreshTime(Date.now());
               }
             }, AUTO_REFRESH_INTERVAL);
           }
-        } else {
-          console.error('❌ Refresh failed:', data.message);
         }
-      } else {
-        console.error('❌ Refresh failed with status:', response.status);
       }
-    } catch (error) {
-      console.error('❌ Error refreshing inbox:', error);
+    } catch {
+      // Error refreshing inbox - silent fail
     } finally {
       // Minimum 300ms loading for smooth UX
       setTimeout(() => setRefreshing(false), 300);
@@ -295,8 +272,8 @@ function App() {
       await navigator.clipboard.writeText(emailAddress);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    } catch {
+      // Failed to copy - silent fail
     }
   };
 
@@ -481,9 +458,9 @@ function App() {
         </div>
 
         {/* Email List and Detail */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Inbox List */}
-          <div className="xl:col-span-1 rounded-3xl shadow-2xl overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.98)', animation: 'slideInFromLeft 0.7s ease-out' }}>
+          <div className="lg:col-span-1 rounded-3xl shadow-2xl overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.98)', animation: 'slideInFromLeft 0.7s ease-out' }}>
             <div className="px-5 py-4 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #450693 0%, #8C00FF 100%)' }}>
               <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
                 <Inbox className="w-6 h-6" />
@@ -503,7 +480,7 @@ function App() {
                   <p className="text-sm font-medium text-gray-600">Waiting for incoming emails...</p>
                 </div>
               ) : (
-                emails.map((email, index) => (
+                emails.map((email) => (
                   <div
                     key={email.id}
                     onClick={() => setSelectedEmail(email)}
@@ -539,7 +516,7 @@ function App() {
           </div>
 
           {/* Email Detail */}
-          <div className="xl:col-span-2 rounded-3xl shadow-2xl overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.98)', animation: 'slideInFromRight 0.7s ease-out', height: 'auto' }}>
+          <div className="lg:col-span-2 rounded-3xl shadow-2xl overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.98)', animation: 'slideInFromRight 0.7s ease-out', height: 'auto' }}>
             <div className="px-5 py-4 flex items-center gap-2" style={{ background: 'linear-gradient(135deg, #8C00FF 0%, #FF3F7F 100%)' }}>
               <Mail className="w-6 h-6 text-white" />
               <h2 className="text-lg font-extrabold text-white">

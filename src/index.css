@@ -6,21 +6,5 @@
    Additional styling on top of Tailwind
    =================================== */
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #DBE2EF;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #3F72AF;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #112D4E;
-}
+/* NOTE: Scrollbar styles moved to App.css to avoid conflicts */
+/* App.css contains the primary scrollbar styling with gradients */
