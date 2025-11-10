@@ -544,6 +544,22 @@ select:focus {
   border-color: #8C00FF !important;
 }
 
+/* ========== INPUT SAFEGUARDS ========== */
+/* Ensure email input always visible */
+input[type="text"] {
+  -webkit-text-fill-color: inherit !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+input[type="text"][readonly] {
+  cursor: text !important;
+  user-select: all !important;
+  -webkit-user-select: all !important;
+}
+
 /* ========== TRANSITION OVERRIDES ========== */
 
 .transition-smooth {

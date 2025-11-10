@@ -382,17 +382,23 @@ function App() {
               <div className="relative flex-1">
                 <input
                   type="text"
-                  value={emailAddress}
+                  value={emailAddress || 'Loading...'}
                   readOnly
                   className="w-full px-6 py-4 text-lg sm:text-xl font-mono font-black rounded-2xl border-3 focus:outline-none text-center lg:text-left shadow-inner transition-all duration-300"
                   style={{ 
                     background: 'linear-gradient(135deg, #f8f9ff 0%, #fff5f5 100%)', 
-                    color: '#450693', 
+                    color: '#450693 !important', 
                     border: '3px solid transparent',
                     backgroundImage: 'linear-gradient(white, white), linear-gradient(90deg, #8C00FF, #FF3F7F)',
                     backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box'
+                    backgroundClip: 'padding-box, border-box',
+                    WebkitTextFillColor: '#450693',
+                    opacity: 1,
+                    visibility: 'visible',
+                    display: 'block',
+                    minHeight: '60px'
                   }}
+                  placeholder="your-email@fadhlirajwaa.my.id"
                 />
               </div>
               <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
