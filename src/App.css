@@ -207,9 +207,9 @@ button:active::before {
 /* CRITICAL: Fixed height untuk prevent UI jumping saat email besar */
 
 .email-detail-container {
-  max-height: 650px;
-  min-height: 450px;
-  overflow: hidden;
+  max-height: none;
+  min-height: 0;
+  overflow: visible;
   scrollbar-width: thin;
   scrollbar-color: #8C00FF #f0f0f0;
 }

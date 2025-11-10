@@ -29,6 +29,7 @@ function App() {
   // Refs
   const socketRef = useRef(null);
   const autoRefreshIntervalRef = useRef(null);
+  const emailIframeRef = useRef(null);
 
   // Generate random email address (no dashes)
   const generateEmailAddress = () => {
@@ -38,6 +39,30 @@ function App() {
       randomString += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return `${randomString}@${EMAIL_DOMAIN}`;
+  };
+
+  // Handle iframe load and dynamic assets inside it
+  const handleIframeLoad = () => {
+    resizeEmailIframe();
+    try {
+      const iframe = emailIframeRef.current;
+      const doc = iframe?.contentDocument || iframe?.contentWindow?.document;
+      if (!doc) return;
+      // Resize again when images or fonts finish loading
+      Array.from(doc.images || []).forEach((img) => {
+        if (!img.complete) img.addEventListener('load', resizeEmailIframe, { once: true });
+      });
+      if (doc.fonts && doc.fonts.ready) {
+        doc.fonts.ready.then(() => resizeEmailIframe()).catch(() => {});
+      }
+      // Observe DOM mutations (e.g., collapsible sections)
+      const observer = new MutationObserver(() => resizeEmailIframe());
+      observer.observe(doc.body, { childList: true, subtree: true, attributes: true });
+      // Clean up on unload
+      iframe.addEventListener('load', () => observer.disconnect(), { once: true });
+    } catch {
+      // ignore errors
+    }
   };
 
   // Initialize email address and socket connection
@@ -276,13 +301,51 @@ function App() {
       // Failed to copy - silent fail
     }
   };
-
   // Compose srcDoc for iframe to sandbox email HTML and avoid global CSS bleed
   const composeEmailSrcDoc = (html) => {
     const sanitized = (html || '')
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-    return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>html,body{margin:0;padding:0;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif}*{max-width:100% !important;box-sizing:border-box !important}img,svg,video{max-width:100% !important;height:auto !important;display:block}table{width:100% !important;border-collapse:collapse !important;table-layout:fixed !important}a{color:#1d4ed8 !important;text-decoration:underline !important}</style></head><body>${sanitized}</body></html>`;
+    return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>
+      html,body{margin:0;padding:0;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;height:auto!important;min-height:0!important;overflow:hidden!important}
+      *{max-width:100%!important;box-sizing:border-box!important}
+      *[style*='min-height'],*[minheight]{min-height:auto!important}
+      *[style*='max-height'],*[maxheight]{max-height:none!important}
+      *[style*='height:100vh'],*[style*='height: 100vh']{height:auto!important}
+      *[style*='height:100%']{height:auto!important}
+      [height]{height:auto!important}
+      img,svg,video{max-width:100%!important;height:auto!important;display:block}
+      table{width:100%!important;border-collapse:collapse!important;table-layout:fixed!important}
+      a{color:#1d4ed8!important;text-decoration:underline!important}
+      body > :last-child{margin-bottom:0!important}
+    </style></head><body>${sanitized}</body></html>`;
   };
+
+  // Auto-resize iframe height to fit its content
+  const resizeEmailIframe = () => {
+    const iframe = emailIframeRef.current;
+    if (!iframe) return;
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!doc) return;
+      const body = doc.body;
+      const html = doc.documentElement;
+      const height = Math.max(
+        body?.scrollHeight || 0,
+        html?.scrollHeight || 0,
+        body?.offsetHeight || 0,
+        html?.offsetHeight || 0
+      );
+      iframe.style.height = `${height}px`;
+    } catch {
+      // ignore cross-origin errors (shouldn't occur with srcDoc + allow-same-origin)
+    }
+  };
+
+  useEffect(() => {
+    const handler = () => resizeEmailIframe();
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   // Format date
   const formatDate = (dateString) => {
@@ -536,7 +599,7 @@ function App() {
                 {selectedEmail ? 'EMAIL DETAILS' : 'SELECT AN EMAIL'}
               </h2>
             </div>
-            <div className="p-4 md:p-6" style={{ height: '500px', overflowY: 'auto', overflowX: 'hidden' }}>
+            <div className="p-4 md:p-6">
               {selectedEmail ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -590,8 +653,10 @@ function App() {
                       {selectedEmail.bodyHtml ? (
                         <iframe
                           title="email-content"
+                          ref={emailIframeRef}
                           className="email-iframe"
-                          sandbox="allow-popups allow-top-navigation-by-user-activation"
+                          onLoad={handleIframeLoad}
+                          sandbox="allow-same-origin allow-popups allow-top-navigation-by-user-activation"
                           srcDoc={composeEmailSrcDoc(selectedEmail.bodyHtml)}
                         />
                       ) : (
