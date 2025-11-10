@@ -109,12 +109,7 @@ html {
 /* ========== EMAIL CARD ANIMATIONS ========== */
 
 .email-card {
-  animation: slideInFromLeft 0.5s ease-out;
-  will-change: transform;
-}
-
-.email-card:nth-child(even) {
-  animation: slideInFromRight 0.5s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
 /* ========== HOVER & INTERACTION EFFECTS ========== */
@@ -212,11 +207,12 @@ button:active::before {
 /* CRITICAL: Fixed height untuk prevent UI jumping saat email besar */
 
 .email-detail-container {
-  max-height: 500px;
-  min-height: 500px;
+  max-height: 650px;
+  min-height: 450px;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #3F72AF #F9F7F7;
+  scrollbar-color: #8C00FF #f0f0f0;
 }
 
 .email-content-wrapper {
@@ -224,9 +220,16 @@ button:active::before {
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
-  font-size: 0.875rem; /* Base font size fallback */
+  font-size: 0.875rem;
   line-height: 1.6;
-  color: #112D4E;
+  color: #450693;
+  padding: 0.5rem;
+}
+
+/* Prevent layout breaking */
+.email-content-wrapper > * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 /* ========== NORMALIZE EMAIL HTML CONTENT ========== */
@@ -252,63 +255,69 @@ button:active::before {
 
 /* Force normal font sizes - Override inline styles! */
 .email-content-wrapper h1 {
-  font-size: 1.5rem !important;
+  font-size: 1.25rem !important;
   font-weight: 700 !important;
-  margin: 0.75rem 0 !important;
-  line-height: 1.5 !important;
-  color: #112D4E !important;
+  margin: 0.5rem 0 !important;
+  line-height: 1.4 !important;
+  color: #450693 !important;
 }
 
 .email-content-wrapper h2 {
-  font-size: 1.25rem !important;
-  font-weight: 600 !important;
-  margin: 0.5rem 0 !important;
-  line-height: 1.5 !important;
-  color: #112D4E !important;
-}
-
-.email-content-wrapper h3 {
   font-size: 1.125rem !important;
   font-weight: 600 !important;
   margin: 0.5rem 0 !important;
-  line-height: 1.5 !important;
-  color: #3F72AF !important;
+  line-height: 1.4 !important;
+  color: #450693 !important;
+}
+
+.email-content-wrapper h3 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin: 0.5rem 0 !important;
+  line-height: 1.4 !important;
+  color: #8C00FF !important;
 }
 
 .email-content-wrapper h4,
 .email-content-wrapper h5,
 .email-content-wrapper h6 {
-  font-size: 1rem !important;
+  font-size: 0.875rem !important;
   font-weight: 600 !important;
   margin: 0.5rem 0 !important;
-  line-height: 1.5 !important;
-  color: #3F72AF !important;
+  line-height: 1.4 !important;
+  color: #8C00FF !important;
 }
 
 .email-content-wrapper p {
   font-size: 0.875rem !important;
   line-height: 1.6 !important;
   margin: 0.5rem 0 !important;
-  color: #112D4E !important;
+  color: #450693 !important;
 }
 
-.email-content-wrapper span,
-.email-content-wrapper div {
+.email-content-wrapper span {
   font-size: inherit !important;
   line-height: inherit !important;
   color: inherit !important;
+  max-width: 100% !important;
+}
+
+.email-content-wrapper div {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
 }
 
 /* Ensure divs inside wrapper have minimum visibility */
 .email-content-wrapper > div {
   min-height: 1em;
+  max-width: 100% !important;
 }
 
 .email-content-wrapper a {
-  color: #3F72AF !important;
+  color: #8C00FF !important;
   text-decoration: underline !important;
   font-size: inherit !important;
-  word-break: break-all;
+  word-break: break-word !important;
 }
 
 .email-content-wrapper button,
@@ -452,27 +461,30 @@ button:active::before {
   }
   
   .email-detail-container {
-    max-height: 350px;
+    max-height: 400px;
     min-height: 300px;
   }
   
   .email-content-wrapper {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
+    padding: 0.25rem;
   }
   
-  /* Stack buttons vertically on mobile */
-  .flex-wrap {
-    flex-direction: column;
-  }
-  
-  /* Full width buttons on mobile */
-  button {
-    width: 100%;
+  .email-content-wrapper p {
+    font-size: 0.8rem !important;
   }
   
   /* Reduce padding on mobile */
   .p-6 {
-    padding: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .p-5 {
+    padding: 0.75rem;
+  }
+  
+  .p-4 {
+    padding: 0.5rem;
   }
 }
 
@@ -516,8 +528,20 @@ button:active::before {
 
 button:focus-visible,
 input:focus-visible {
-  outline: 2px solid #3F72AF;
-  outline-offset: 2px;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(140, 0, 255, 0.2);
+}
+
+/* Remove any yellow border */
+*:focus {
+  outline: none !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  border-color: #8C00FF !important;
 }
 
 /* ========== TRANSITION OVERRIDES ========== */
@@ -591,19 +615,18 @@ input:focus-visible {
 }
 
 /* Improved table responsiveness */
-.prose table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1rem 0;
+.email-content-wrapper table {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 0.5rem 0 !important;
+  table-layout: fixed !important;
 }
-.prose th {
-  background: #f3f4f6;
-  padding: 0.5rem;
-  text-align: left;
-  font-weight: 600;
-  border: 1px solid #e5e7eb;
-}
-.prose td {
-  padding: 0.5rem;
-  border: 1px solid #e5e7eb;
+
+.email-content-wrapper th,
+.email-content-wrapper td {
+  padding: 0.25rem !important;
+  border: 1px solid #e5e7eb !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
 }

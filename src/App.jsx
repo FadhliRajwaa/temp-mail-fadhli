@@ -493,7 +493,7 @@ function App() {
                 {emails.length}
               </span>
             </div>
-            <div className="divide-y divide-gray-100" style={{ maxHeight: '650px', minHeight: '450px', overflowY: 'auto', overflowX: 'hidden' }}>
+            <div className="divide-y divide-gray-100" style={{ height: '500px', overflowY: 'auto', overflowX: 'hidden' }}>
               {emails.length === 0 ? (
                 <div className="p-10 text-center">
                   <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 animate-bounce" style={{ background: 'linear-gradient(135deg, rgba(140, 0, 255, 0.1), rgba(255, 63, 127, 0.05))' }}>
@@ -507,32 +507,30 @@ function App() {
                   <div
                     key={email.id}
                     onClick={() => setSelectedEmail(email)}
-                    className={`relative p-5 cursor-pointer transition-all duration-300 hover:shadow-lg border-l-4 group ${
-                      selectedEmail?.id === email.id ? 'shadow-lg' : ''
+                    className={`relative p-4 cursor-pointer transition-all duration-300 hover:bg-gray-50 border-l-4 ${
+                      selectedEmail?.id === email.id ? 'bg-purple-50' : ''
                     }`}
                     style={{ 
-                      borderLeftColor: selectedEmail?.id === email.id ? '#8C00FF' : 'transparent',
-                      background: selectedEmail?.id === email.id ? 'linear-gradient(90deg, rgba(140, 0, 255, 0.05), transparent)' : 'transparent',
-                      animationDelay: `${index * 0.05}s`
+                      borderLeftColor: selectedEmail?.id === email.id ? '#8C00FF' : 'transparent'
                     }}
                   >
-                    <div className="flex justify-between items-start mb-3">
-                      <p className="font-black text-sm truncate flex-1 pr-2" style={{ color: '#450693' }}>
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-bold text-xs truncate flex-1 pr-2" style={{ color: '#450693' }}>
                         {email.from}
                       </p>
-                      <span className="text-xs font-bold shrink-0" style={{ color: '#FF3F7F' }}>
+                      <span className="text-xs font-medium shrink-0" style={{ color: '#FF3F7F' }}>
                         {formatDate(email.receivedAt)}
                       </span>
                     </div>
-                    <p className="text-base font-black truncate mb-2" style={{ color: '#450693' }}>
+                    <p className="text-sm font-bold truncate mb-1" style={{ color: '#450693' }}>
                       {email.subject || '(No Subject)'}
                     </p>
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                      {email.bodyText || 'Empty message'}
+                    <p className="text-xs text-gray-600 line-clamp-2 mb-2">
+                      {email.bodyText ? email.bodyText.substring(0, 80) + '...' : 'Empty message'}
                     </p>
-                    <div className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full font-bold" style={{ background: 'linear-gradient(135deg, rgba(255, 196, 0, 0.15), rgba(255, 63, 127, 0.1))' }}>
-                      <Clock className="w-4 h-4" style={{ color: '#FFC400' }} />
-                      <span style={{ color: '#FF3F7F' }}>{getExpiryTime(email.expiresAt)}</span>
+                    <div className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-full" style={{ background: 'rgba(255, 196, 0, 0.15)' }}>
+                      <Clock className="w-3.5 h-3.5" style={{ color: '#FFC400' }} />
+                      <span style={{ color: '#FF3F7F', fontSize: '11px' }}>{getExpiryTime(email.expiresAt)}</span>
                     </div>
                   </div>
                 ))
@@ -541,16 +539,16 @@ function App() {
           </div>
 
           {/* Email Detail */}
-          <div className="xl:col-span-2 rounded-3xl shadow-2xl overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.98)', animation: 'slideInFromRight 0.7s ease-out' }}>
+          <div className="xl:col-span-2 rounded-3xl shadow-2xl overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.98)', animation: 'slideInFromRight 0.7s ease-out', height: 'auto' }}>
             <div className="px-5 py-4 flex items-center gap-2" style={{ background: 'linear-gradient(135deg, #8C00FF 0%, #FF3F7F 100%)' }}>
               <Mail className="w-6 h-6 text-white" />
               <h2 className="text-lg font-extrabold text-white">
                 {selectedEmail ? 'EMAIL DETAILS' : 'SELECT AN EMAIL'}
               </h2>
             </div>
-            <div className="p-6" style={{ maxHeight: '650px', overflowY: 'auto' }}>
+            <div className="p-4 md:p-6" style={{ height: '500px', overflowY: 'auto', overflowX: 'hidden' }}>
               {selectedEmail ? (
-                <div className="space-y-5">
+                <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-5 rounded-2xl" style={{ background: 'linear-gradient(135deg, rgba(140, 0, 255, 0.05), rgba(255, 196, 0, 0.05))', border: '2px solid #8C00FF' }}>
                       <label className="text-xs font-black uppercase mb-2 block" style={{ color: '#8C00FF' }}>
@@ -592,20 +590,20 @@ function App() {
                     </p>
                   </div>
                   
-                  <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ border: '3px solid', borderImage: 'linear-gradient(90deg, #8C00FF, #FF3F7F, #FFC400) 1' }}>
+                  <div className="rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: '#8C00FF' }}>
                     <div className="px-5 py-4" style={{ background: 'linear-gradient(90deg, #450693, #8C00FF)' }}>
                       <label className="text-base font-black text-white">
                         EMAIL CONTENT
                       </label>
                     </div>
-                    <div className="p-6" style={{ maxHeight: '450px', overflowY: 'auto', background: '#ffffff' }}>
+                    <div className="email-detail-container bg-white p-4 sm:p-6">
                       {selectedEmail.bodyHtml ? (
                         <div
-                          className="email-content-wrapper prose prose-sm max-w-none"
+                          className="email-content-wrapper"
                           dangerouslySetInnerHTML={{ __html: selectedEmail.bodyHtml }}
                         />
                       ) : (
-                        <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed" style={{ color: '#450693' }}>
+                        <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed break-words" style={{ color: '#450693', maxWidth: '100%', overflowWrap: 'break-word' }}>
                           {selectedEmail.bodyText || '(Empty message)'}
                         </pre>
                       )}
