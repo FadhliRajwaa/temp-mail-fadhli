@@ -277,6 +277,13 @@ function App() {
     }
   };
 
+  // Compose srcDoc for iframe to sandbox email HTML and avoid global CSS bleed
+  const composeEmailSrcDoc = (html) => {
+    const sanitized = (html || '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+    return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>html,body{margin:0;padding:0;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif}*{max-width:100% !important;box-sizing:border-box !important}img,svg,video{max-width:100% !important;height:auto !important;display:block}table{width:100% !important;border-collapse:collapse !important;table-layout:fixed !important}a{color:#1d4ed8 !important;text-decoration:underline !important}</style></head><body>${sanitized}</body></html>`;
+  };
+
   // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -581,9 +588,11 @@ function App() {
                     </div>
                     <div className="email-detail-container bg-white p-4 sm:p-6">
                       {selectedEmail.bodyHtml ? (
-                        <div
-                          className="email-content-wrapper"
-                          dangerouslySetInnerHTML={{ __html: selectedEmail.bodyHtml }}
+                        <iframe
+                          title="email-content"
+                          className="email-iframe"
+                          sandbox="allow-popups allow-top-navigation-by-user-activation"
+                          srcDoc={composeEmailSrcDoc(selectedEmail.bodyHtml)}
                         />
                       ) : (
                         <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed break-words" style={{ color: '#450693', maxWidth: '100%', overflowWrap: 'break-word' }}>

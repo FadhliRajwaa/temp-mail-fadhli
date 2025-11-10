@@ -209,8 +209,7 @@ button:active::before {
 .email-detail-container {
   max-height: 650px;
   min-height: 450px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: #8C00FF #f0f0f0;
 }
@@ -224,6 +223,15 @@ button:active::before {
   line-height: 1.6;
   color: #450693;
   padding: 0.5rem;
+}
+
+/* Iframe that sandboxes HTML email */
+.email-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #ffffff;
 }
 
 /* Prevent layout breaking */
