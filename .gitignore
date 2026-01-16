@@ -41,6 +41,7 @@ backend/uploads/
 # OS
 Thumbs.db
 .DS_Store
+nul
 
 # Testing
 coverage/

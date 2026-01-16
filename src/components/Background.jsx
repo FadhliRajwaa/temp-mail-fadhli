@@ -1,67 +1,26 @@
-import { motion } from "framer-motion";
+import { memo } from "react";
 
-export default function Background() {
+const Background = memo(function Background() {
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden bg-slate-950">
-      {/* Mesh Gradient Base */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a0a0a] to-black opacity-80" />
+    <div className="fixed inset-0 z-[-1] overflow-hidden bg-[#030712]">
+      {/* Static gradient base - no animation, no blur */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-[#030712] to-[#030712]" />
+      
+      {/* Static colored orbs - NO blur, NO animation */}
+      <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-violet-950/30 rounded-full" />
+      <div className="absolute top-[10%] -right-[10%] w-[40%] h-[40%] bg-fuchsia-950/20 rounded-full" />
+      <div className="absolute -bottom-[20%] left-[10%] w-[50%] h-[50%] bg-indigo-950/25 rounded-full" />
 
-      {/* Animated Blobs */}
-      <motion.div
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.3, 0.2],
-          x: [0, 50, 0],
-          y: [0, -30, 0],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute -top-[10%] -left-[10%] w-[70vw] h-[70vw] bg-violet-900/20 rounded-full blur-[80px] mix-blend-screen"
-      />
-
-      <motion.div
-        animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.2, 0.3, 0.2],
-          x: [0, -30, 0],
-          y: [0, 50, 0],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2,
-        }}
-        className="absolute top-[20%] right-[0%] w-[60vw] h-[60vw] bg-fuchsia-900/20 rounded-full blur-[80px] mix-blend-screen"
-      />
-
-      <motion.div
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.1, 0.2, 0.1],
-          x: [0, 40, 0],
-          y: [0, 40, 0],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 5,
-        }}
-        className="absolute bottom-[-10%] left-[20%] w-[80vw] h-[80vw] bg-indigo-900/20 rounded-full blur-[100px] mix-blend-screen"
-      />
-
-      {/* Grid Overlay for Tech Feel */}
+      {/* Simple grid overlay */}
       <div 
-        className="absolute inset-0 opacity-[0.03]" 
+        className="absolute inset-0 opacity-[0.015]" 
         style={{ 
-          backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', 
-          backgroundSize: '50px 50px' 
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', 
+          backgroundSize: '60px 60px' 
         }} 
       />
     </div>
   );
-}
+});
+
+export default Background;

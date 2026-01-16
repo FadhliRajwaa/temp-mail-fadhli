@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { io } from 'socket.io-client';
-import Background from './components/Background';
 import Header from './components/Header';
-import HeroSection from './components/HeroSection';
 import InboxList from './components/InboxList';
-import EmailDetail from './components/EmailDetail';
 import './App.css';
+
+const Background = lazy(() => import('./components/Background'));
+const HeroSection = lazy(() => import('./components/HeroSection'));
+const EmailDetail = lazy(() => import('./components/EmailDetail'));
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 const EMAIL_DOMAIN = import.meta.env.VITE_EMAIL_DOMAIN || 'domain-saya.my.id';
-const AUTO_REFRESH_INTERVAL = 30000;
 
 function App() {
   // States
@@ -18,21 +18,19 @@ function App() {
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   
   // Refs
   const socketRef = useRef(null);
-  const autoRefreshIntervalRef = useRef(null);
 
   // Generate random email address
-  const generateEmailAddress = () => {
+  const generateEmailAddress = useCallback(() => {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     let randomString = '';
-    for (let i = 0; i < 8; i++) { // Shorter is trendier
+    for (let i = 0; i < 8; i++) {
       randomString += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return `${randomString}@${EMAIL_DOMAIN}`;
-  };
+  }, []);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('tempMailAddress');
@@ -47,7 +45,9 @@ function App() {
     socketRef.current = io(BACKEND_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+      timeout: 5000,
     });
 
     const socket = socketRef.current;
@@ -56,7 +56,7 @@ function App() {
       setIsConnected(true);
       setLoading(false);
       socket.emit('join-room', newEmail);
-      handleInitialFetch(newEmail);
+      setTimeout(() => handleInitialFetch(newEmail), 500);
     });
 
     socket.on('disconnect', () => setIsConnected(false));
@@ -64,7 +64,12 @@ function App() {
     socket.on('reconnect', () => {
       setIsConnected(true);
       socket.emit('join-room', newEmail);
-      handleInitialFetch(newEmail);
+      setTimeout(() => handleInitialFetch(newEmail), 500);
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err);
+      setIsConnected(false);
     });
 
     // Handle incoming emails
@@ -85,18 +90,12 @@ function App() {
       if (email.to?.toLowerCase() === newEmail.toLowerCase()) handleNewEmail(email);
     });
 
-    // Auto Refresh
-    autoRefreshIntervalRef.current = setInterval(() => {
-      if (socketRef.current?.connected) handleInitialFetch(newEmail);
-    }, AUTO_REFRESH_INTERVAL);
-
     return () => {
       socket.disconnect();
-      if (autoRefreshIntervalRef.current) clearInterval(autoRefreshIntervalRef.current);
     };
   }, []);
 
-  const handleInitialFetch = async (email) => {
+  const handleInitialFetch = useCallback(async (email) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/emails/${email}`);
       const data = await response.json();
@@ -104,16 +103,9 @@ function App() {
     } catch {
       // silent
     }
-  };
+  }, []);
 
-  const handleRefresh = async () => {
-    if (refreshing) return;
-    setRefreshing(true);
-    await handleInitialFetch(emailAddress);
-    setTimeout(() => setRefreshing(false), 500);
-  };
-
-  const handleCreateNew = () => {
+  const handleCreateNew = useCallback(() => {
     const oldEmail = emailAddress;
     const newEmail = generateEmailAddress();
     
@@ -128,7 +120,7 @@ function App() {
       socketRef.current.emit('join-room', newEmail);
       handleInitialFetch(newEmail);
     }
-  };
+  }, [emailAddress, generateEmailAddress, handleInitialFetch]);
 
   if (loading) {
     return (
@@ -145,7 +137,9 @@ function App() {
 
   return (
     <div className="relative min-h-screen font-sans text-slate-200 selection:bg-violet-500/30 selection:text-violet-200">
-      <Background />
+      <Suspense fallback={<div className="fixed inset-0 bg-black" />}>
+        <Background />
+      </Suspense>
       
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header isConnected={isConnected} />
@@ -154,13 +148,13 @@ function App() {
           
           {/* Top Section */}
           <div className={`${selectedEmail ? 'hidden lg:block' : 'block'}`}>
-            <HeroSection 
-              emailAddress={emailAddress} 
-              loading={loading}
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              onCreateNew={handleCreateNew}
-            />
+            <Suspense fallback={<div className="h-40 bg-white/5 rounded-2xl animate-pulse" />}>
+              <HeroSection 
+                emailAddress={emailAddress} 
+                loading={loading}
+                onCreateNew={handleCreateNew}
+              />
+            </Suspense>
           </div>
 
           {/* Content Grid */}
@@ -175,10 +169,14 @@ function App() {
             </div>
             
             <div className="lg:col-span-8 h-full">
-              <EmailDetail 
-                email={selectedEmail} 
-                onClose={() => setSelectedEmail(null)} 
-              />
+              <Suspense fallback={<div className="h-full bg-white/5 rounded-2xl animate-pulse flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin"></div>
+              </div>}>
+                <EmailDetail 
+                  email={selectedEmail} 
+                  onClose={() => setSelectedEmail(null)} 
+                />
+              </Suspense>
             </div>
           </div>
 
