@@ -72,8 +72,10 @@ function App() {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-      timeout: 5000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: Infinity,
+      randomizationFactor: 0.5,
+      timeout: 20000,
     });
 
     socketRef.current = socket;

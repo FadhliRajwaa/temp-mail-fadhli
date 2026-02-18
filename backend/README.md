@@ -174,7 +174,8 @@ Server statistics
 5. Environment Variables:
    - MONGODB_URI
    - PORT (auto dari Render)
-   - FRONTEND_URL
+   - FRONTEND_URLS (contoh: `https://fadhlirajwaa.my.id,https://www.fadhlirajwaa.my.id`)
+   - FRONTEND_URL (fallback, contoh: `https://fadhlirajwaa.my.id`)
    - EMAIL_DOMAIN
    - NODE_ENV=production
 

@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import { simpleParser } from 'mailparser';
 import connectDatabase from './config/database.js';
+import { createCorsOriginChecker, parseAllowedOrigins } from './config/cors.js';
 import Email from './models/Email.js';
 
 dotenv.config();
@@ -16,10 +17,16 @@ dotenv.config();
 const app = express();
 const httpServer = createServer(app);
 
+const allowedOrigins = parseAllowedOrigins(
+  process.env.FRONTEND_URLS,
+  process.env.FRONTEND_URL || 'http://localhost:5173'
+);
+const corsOriginChecker = createCorsOriginChecker(allowedOrigins);
+
 // Konfigurasi Socket.IO dengan CORS
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: corsOriginChecker,
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -28,7 +35,7 @@ const io = new Server(httpServer, {
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: corsOriginChecker,
   credentials: true
 }));
 app.use(express.json());
@@ -299,7 +306,6 @@ app.get('/api/stats', async (req, res) => {
 
 /**
  * POST /api/sendgrid/webhook
-Z
  * Handle incoming emails dari SendGrid (multipart/form-data)
  */
 app.post('/api/sendgrid/webhook', upload.none(), async (req, res) => {
@@ -413,7 +419,8 @@ app.use((req, res) => {
 });
 
 // Error Handler
-app.use((err, req, res) => {
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({
     success: false,
