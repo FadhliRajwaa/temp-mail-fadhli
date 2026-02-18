@@ -12,7 +12,7 @@ const FeatureBadge = memo(function FeatureBadge({ icon, label, color }) {
   );
 });
 
-const HeroSection = memo(function HeroSection({ emailAddress, loading, onRefresh, onCreateNew, refreshing }) {
+const HeroSection = memo(function HeroSection({ emailAddress, mailboxLink, onRefresh, onCreateNew, refreshing }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -42,17 +42,13 @@ const HeroSection = memo(function HeroSection({ emailAddress, loading, onRefresh
             </h1>
           </div>
           
-          <div className="w-full max-w-xl">
+          <div className="w-full max-w-xl space-y-3">
             <div className="bg-[#0a0f1a] border border-white/[0.08] rounded-xl flex flex-col sm:flex-row items-center p-2 gap-2">
               
               {/* Email Display */}
               <div className="flex-1 w-full px-4 py-3 sm:py-2 flex items-center justify-center sm:justify-start overflow-hidden">
                 <div className="font-mono text-base sm:text-lg text-slate-200 truncate font-medium">
-                  {loading ? (
-                    <span className="text-slate-500">Generating...</span>
-                  ) : (
-                    <span className="select-all">{emailAddress}</span>
-                  )}
+                  <span className="select-all">{emailAddress}</span>
                 </div>
               </div>
 
@@ -99,6 +95,13 @@ const HeroSection = memo(function HeroSection({ emailAddress, loading, onRefresh
               </div>
 
             </div>
+
+            <a
+              href={mailboxLink}
+              className="block text-center text-sm font-mono text-violet-300 hover:text-violet-200 underline underline-offset-4 break-all"
+            >
+              {mailboxLink}
+            </a>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3">

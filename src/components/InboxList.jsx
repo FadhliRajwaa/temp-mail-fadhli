@@ -1,6 +1,6 @@
+import { memo, useCallback } from 'react';
 import { Inbox } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { memo, useCallback } from 'react';
 
 const EmailItem = memo(function EmailItem({ email, isSelected, onClick, formatDate }) {
   return (

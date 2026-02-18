@@ -1,6 +1,18 @@
-import { useRef, useCallback, useMemo, useState, useEffect, memo } from 'react';
+import { useRef, useMemo, useState, useEffect, memo, useCallback } from 'react';
 import { ChevronLeft, Trash2, Mail, Calendar, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
+
+function composeEmailSrcDoc(html) {
+  const sanitized = (html || '').replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>
+      html,body{margin:0;padding:16px;background:transparent;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;height:auto!important;min-height:0!important;overflow:hidden!important;line-height:1.6}
+      *{max-width:100%!important;box-sizing:border-box!important}
+      img,svg,video{max-width:100%!important;height:auto!important;display:block}
+      a{color:#a78bfa!important;text-decoration:underline!important}
+      p,h1,h2,h3,h4,h5,h6,li,span,div{color:#cbd5e1!important}
+      body>:last-child{margin-bottom:0!important}
+    </style></head><body>${sanitized}</body></html>`;
+}
 
 const EmailDetail = memo(function EmailDetail({ email, onClose }) {
   const iframeRef = useRef(null);
@@ -42,21 +54,9 @@ const EmailDetail = memo(function EmailDetail({ email, onClose }) {
     };
   }, []);
 
-  const composeEmailSrcDoc = useCallback((html) => {
-    const sanitized = (html || '').replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-    return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>
-      html,body{margin:0;padding:16px;background:transparent;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;height:auto!important;min-height:0!important;overflow:hidden!important;line-height:1.6}
-      *{max-width:100%!important;box-sizing:border-box!important}
-      img,svg,video{max-width:100%!important;height:auto!important;display:block}
-      a{color:#a78bfa!important;text-decoration:underline!important}
-      p,h1,h2,h3,h4,h5,h6,li,span,div{color:#cbd5e1!important}
-      body>:last-child{margin-bottom:0!important}
-    </style></head><body>${sanitized}</body></html>`;
-  }, []);
-
-  const emailSrcDoc = useMemo(() => 
+  const emailSrcDoc = useMemo(() =>
     email?.bodyHtml ? composeEmailSrcDoc(email.bodyHtml) : null,
-    [email?.bodyHtml, composeEmailSrcDoc]
+    [email?.bodyHtml]
   );
 
   if (!email) {

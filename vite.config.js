@@ -9,10 +9,9 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'ui-vendor': ['lucide-react'],
           'socket-vendor': ['socket.io-client'],
-          'utils': ['clsx', 'tailwind-merge'],
-          'virtual-list': ['react-window']
+          'utils': ['clsx', 'tailwind-merge']
         }
       }
     },
@@ -26,6 +25,6 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'socket.io-client', 'framer-motion', 'react-window']
+    include: ['react', 'react-dom', 'socket.io-client']
   }
 })
