@@ -3,7 +3,7 @@
 $url = "https://temp-mail-backend-vnk4.onrender.com/api/sendgrid/webhook"
 
 $body = @{
-    to = "42a1d2qceyak@mail.fadhlirajwaa.my.id"
+    to = "42a1d2qceyak@fadhlimail.biz.id"
     from = "test@gmail.com"
     subject = "Test Email Manual"
     text = "Hello from PowerShell test"
@@ -25,4 +25,4 @@ try {
 }
 
 Write-Host ""
-Write-Host "Now check frontend: https://temp-mail.fadhlirajwaa.my.id" -ForegroundColor Yellow
+Write-Host "Now check frontend: https://www.fadhlimail.biz.id" -ForegroundColor Yellow

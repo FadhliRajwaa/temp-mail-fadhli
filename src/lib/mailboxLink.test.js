@@ -8,51 +8,51 @@ import {
 } from './mailboxLink.js';
 
 test('isAllowedMailboxEmail hanya menerima email valid sesuai domain', () => {
-  assert.equal(isAllowedMailboxEmail('user@fadhlirajwaa.my.id', 'fadhlirajwaa.my.id'), true);
-  assert.equal(isAllowedMailboxEmail('user@example.com', 'fadhlirajwaa.my.id'), false);
-  assert.equal(isAllowedMailboxEmail('invalid-email', 'fadhlirajwaa.my.id'), false);
+  assert.equal(isAllowedMailboxEmail('user@fadhlimail.biz.id', 'fadhlimail.biz.id'), true);
+  assert.equal(isAllowedMailboxEmail('user@example.com', 'fadhlimail.biz.id'), false);
+  assert.equal(isAllowedMailboxEmail('invalid-email', 'fadhlimail.biz.id'), false);
 });
 
 test('getEmailFromPathname ambil email dari path', () => {
-  assert.equal(getEmailFromPathname('/anabbey@fadhlirajwaa.my.id'), 'anabbey@fadhlirajwaa.my.id');
+  assert.equal(getEmailFromPathname('/anabbey@fadhlimail.biz.id'), 'anabbey@fadhlimail.biz.id');
   assert.equal(getEmailFromPathname('/'), null);
   assert.equal(getEmailFromPathname('/foo/bar'), null);
 });
 
 test('getInitialMailboxEmail prioritas path > query > saved > generated', () => {
-  const domain = 'fadhlirajwaa.my.id';
+  const domain = 'fadhlimail.biz.id';
 
   const fromPath = getInitialMailboxEmail({
-    pathname: '/pathuser@fadhlirajwaa.my.id',
-    search: '?email=queryuser@fadhlirajwaa.my.id',
-    savedEmail: 'saved@fadhlirajwaa.my.id',
-    generatedEmail: 'gen@fadhlirajwaa.my.id',
+    pathname: '/pathuser@fadhlimail.biz.id',
+    search: '?email=queryuser@fadhlimail.biz.id',
+    savedEmail: 'saved@fadhlimail.biz.id',
+    generatedEmail: 'gen@fadhlimail.biz.id',
     domain,
   });
-  assert.equal(fromPath, 'pathuser@fadhlirajwaa.my.id');
+  assert.equal(fromPath, 'pathuser@fadhlimail.biz.id');
 
   const fromQuery = getInitialMailboxEmail({
     pathname: '/',
-    search: '?email=queryuser@fadhlirajwaa.my.id',
-    savedEmail: 'saved@fadhlirajwaa.my.id',
-    generatedEmail: 'gen@fadhlirajwaa.my.id',
+    search: '?email=queryuser@fadhlimail.biz.id',
+    savedEmail: 'saved@fadhlimail.biz.id',
+    generatedEmail: 'gen@fadhlimail.biz.id',
     domain,
   });
-  assert.equal(fromQuery, 'queryuser@fadhlirajwaa.my.id');
+  assert.equal(fromQuery, 'queryuser@fadhlimail.biz.id');
 
   const fromSaved = getInitialMailboxEmail({
     pathname: '/',
     search: '',
-    savedEmail: 'saved@fadhlirajwaa.my.id',
-    generatedEmail: 'gen@fadhlirajwaa.my.id',
+    savedEmail: 'saved@fadhlimail.biz.id',
+    generatedEmail: 'gen@fadhlimail.biz.id',
     domain,
   });
-  assert.equal(fromSaved, 'saved@fadhlirajwaa.my.id');
+  assert.equal(fromSaved, 'saved@fadhlimail.biz.id');
 });
 
 test('buildMailboxUrl membentuk link mailbox sesuai origin', () => {
   assert.equal(
-    buildMailboxUrl('https://fadhlirajwaa.my.id', 'anabbey@fadhlirajwaa.my.id'),
-    'https://fadhlirajwaa.my.id/anabbey@fadhlirajwaa.my.id'
+    buildMailboxUrl('https://www.fadhlimail.biz.id', 'anabbey@fadhlimail.biz.id'),
+    'https://www.fadhlimail.biz.id/anabbey@fadhlimail.biz.id'
   );
 });

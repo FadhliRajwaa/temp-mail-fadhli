@@ -22,6 +22,7 @@ const allowedOrigins = parseAllowedOrigins(
   process.env.FRONTEND_URL || 'http://localhost:5173'
 );
 const corsOriginChecker = createCorsOriginChecker(allowedOrigins);
+const configuredEmailDomain = (process.env.EMAIL_DOMAIN || '').toLowerCase().trim();
 
 // Konfigurasi Socket.IO dengan CORS
 const io = new Server(httpServer, {
@@ -362,19 +363,22 @@ app.post('/api/sendgrid/webhook', upload.none(), async (req, res) => {
     
     console.log('Parsed recipient email:', recipientEmail);
     
-    // Pastikan email untuk domain kita (accept both old and new domain)
-    const rootDomain = 'fadhlirajwaa.my.id'; // Accept any subdomain
-    
-    if (!recipientEmail || !recipientEmail.includes(rootDomain)) {
-      console.log('Email rejected - not for our domain:', recipientEmail);
+    const normalizedRecipient = recipientEmail.toLowerCase().trim();
+    const matchesConfiguredDomain = configuredEmailDomain
+      ? normalizedRecipient.endsWith(`@${configuredEmailDomain}`)
+      : true;
+
+    // Pastikan email hanya diterima untuk domain inbox yang aktif
+    if (!normalizedRecipient || !matchesConfiguredDomain) {
+      console.log('Email rejected - not for configured domain:', recipientEmail);
       return res.status(200).send('OK');
     }
     
-    console.log('Email accepted for:', recipientEmail);
+    console.log('Email accepted for:', normalizedRecipient);
 
     // Simpan ke MongoDB (match schema field names)
     const emailDoc = await Email.create({
-      to_address: recipientEmail,
+      to_address: normalizedRecipient,
       from_address: from || 'Unknown Sender',
       subject: subject || '(No Subject)',
       body_text: bodyText,
@@ -385,15 +389,12 @@ app.post('/api/sendgrid/webhook', upload.none(), async (req, res) => {
     // Convert to client format using model method
     const clientEmail = emailDoc.toClientFormat();
 
-    // Normalize recipient email for room matching
-    const normalizedRecipient = recipientEmail.toLowerCase().trim();
-
     // Broadcast via Socket.io to specific room (same as Mailgun)
     io.to(normalizedRecipient).emit('new-email', clientEmail);
     
     console.log('Email saved and broadcasted successfully');
     console.log('   From:', from);
-    console.log('   To:', recipientEmail);
+    console.log('   To:', normalizedRecipient);
     console.log('   Subject:', subject);
     console.log('   Body Text Length:', bodyText.length);
     console.log('   Body HTML Length:', bodyHtml.length);
