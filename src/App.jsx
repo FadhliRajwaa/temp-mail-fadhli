@@ -253,13 +253,13 @@ function App() {
   }, [handleInitialFetch]);
 
   return (
-    <div className="relative min-h-screen font-sans text-slate-200 selection:bg-violet-500/30 selection:text-violet-200">
+    <div className="relative min-h-screen text-[var(--text-primary)] selection:bg-cyan-300/20 selection:text-white">
       <Background />
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header connectionStatus={connectionStatus} />
 
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <main className="mx-auto flex w-full max-w-[90rem] flex-1 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
           <div className={selectedEmail ? 'hidden lg:block' : 'block'}>
             <HeroSection
               emailAddress={emailAddress}
@@ -270,8 +270,8 @@ function App() {
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-380px)] min-h-[500px]">
-            <div className="lg:col-span-4 h-full">
+          <div className="grid min-h-[30rem] grid-cols-1 gap-5 lg:h-[calc(100vh-22rem)] lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] xl:gap-6">
+            <div className="h-full">
               <InboxList
                 emails={emails}
                 selectedEmail={selectedEmail}
@@ -279,11 +279,11 @@ function App() {
               />
             </div>
 
-            <div className="lg:col-span-8 h-full">
+            <div className="h-full">
               <Suspense
                 fallback={(
-                  <div className="h-full bg-white/5 rounded-2xl animate-pulse flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+                  <div className="premium-panel flex h-full min-h-[28rem] items-center justify-center rounded-[1.9rem]">
+                    <div className="h-9 w-9 rounded-full border-2 border-cyan-200/15 border-t-cyan-200 animate-spin" />
                   </div>
                 )}
               >
