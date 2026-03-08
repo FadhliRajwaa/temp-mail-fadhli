@@ -1,8 +1,29 @@
 import { memo } from 'react';
 import { Mail } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { CONNECTION_STATUS } from '../lib/connectionStatus';
 
-const Header = memo(function Header({ isConnected }) {
+const STATUS_CONFIG = {
+  [CONNECTION_STATUS.CONNECTED]: {
+    container: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    dot: 'bg-emerald-500',
+    label: 'Connected',
+  },
+  [CONNECTION_STATUS.RECONNECTING]: {
+    container: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
+    dot: 'bg-amber-400',
+    label: 'Reconnecting',
+  },
+  [CONNECTION_STATUS.OFFLINE]: {
+    container: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+    dot: 'bg-rose-500',
+    label: 'Offline',
+  },
+};
+
+const Header = memo(function Header({ connectionStatus }) {
+  const statusConfig = STATUS_CONFIG[connectionStatus] || STATUS_CONFIG[CONNECTION_STATUS.OFFLINE];
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#030712]/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -23,18 +44,16 @@ const Header = memo(function Header({ isConnected }) {
         <div className="flex items-center gap-4">
           <div className={cn(
             "flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold border",
-            isConnected 
-              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
-              : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+            statusConfig.container
           )}>
             <span className="relative flex h-2 w-2">
               <span className={cn(
                 "inline-flex rounded-full h-2 w-2",
-                isConnected ? "bg-emerald-500" : "bg-rose-500"
+                statusConfig.dot
               )} />
             </span>
             <span className="hidden sm:inline-block">
-              {isConnected ? 'Connected' : 'Offline'}
+              {statusConfig.label}
             </span>
           </div>
         </div>

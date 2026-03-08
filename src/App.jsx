@@ -6,6 +6,15 @@ import HeroSection from './components/HeroSection';
 import InboxList from './components/InboxList';
 import './App.css';
 import { buildMailboxUrl, getInitialMailboxEmail } from './lib/mailboxLink';
+import {
+  CONNECTION_STATUS,
+  FALLBACK_POLL_INTERVAL_MS,
+  HEARTBEAT_INTERVAL_MS,
+  getNextDisconnectStatus,
+  getOfflineTransitionDelay,
+  isHeartbeatStale,
+  shouldUseFallbackPolling,
+} from './lib/connectionStatus';
 
 const EmailDetail = lazy(() => import('./components/EmailDetail'));
 
@@ -45,11 +54,16 @@ function App() {
   const [emailAddress, setEmailAddress] = useState(getInitialEmailAddress);
   const [emails, setEmails] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState(CONNECTION_STATUS.RECONNECTING);
   const [refreshing, setRefreshing] = useState(false);
 
   const socketRef = useRef(null);
   const currentEmailRef = useRef(emailAddress);
+  const connectionStatusRef = useRef(CONNECTION_STATUS.RECONNECTING);
+  const offlineTimerRef = useRef(null);
+  const heartbeatIntervalRef = useRef(null);
+  const fallbackPollIntervalRef = useRef(null);
+  const lastPongAtRef = useRef(0);
   const mailboxLink = buildMailboxUrl(window.location.origin, emailAddress);
 
   const handleInitialFetch = useCallback(async (email) => {
@@ -68,6 +82,39 @@ function App() {
   }, [emailAddress]);
 
   useEffect(() => {
+    connectionStatusRef.current = connectionStatus;
+  }, [connectionStatus]);
+
+  useEffect(() => {
+    const clearOfflineTimer = () => {
+      if (offlineTimerRef.current) {
+        window.clearTimeout(offlineTimerRef.current);
+        offlineTimerRef.current = null;
+      }
+    };
+
+    const scheduleOfflineTransition = () => {
+      if (offlineTimerRef.current || connectionStatusRef.current === CONNECTION_STATUS.OFFLINE) {
+        return;
+      }
+
+      offlineTimerRef.current = window.setTimeout(() => {
+        offlineTimerRef.current = null;
+        setConnectionStatus(CONNECTION_STATUS.OFFLINE);
+      }, getOfflineTransitionDelay());
+    };
+
+    const enterReconnectState = () => {
+      setConnectionStatus((currentStatus) => getNextDisconnectStatus(currentStatus));
+      scheduleOfflineTransition();
+    };
+
+    const markConnected = () => {
+      lastPongAtRef.current = Date.now();
+      clearOfflineTimer();
+      setConnectionStatus(CONNECTION_STATUS.CONNECTED);
+    };
+
     const socket = io(BACKEND_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
@@ -82,19 +129,29 @@ function App() {
 
     const handleSocketConnect = () => {
       const activeEmail = currentEmailRef.current;
-      setIsConnected(true);
+      markConnected();
       socket.emit('join-room', activeEmail);
       handleInitialFetch(activeEmail);
     };
 
-    socket.on('connect', handleSocketConnect);
-    socket.on('disconnect', () => setIsConnected(false));
-    socket.on('reconnect', handleSocketConnect);
+    const handleSocketDisconnect = (reason) => {
+      console.warn('Socket disconnected:', reason);
+      enterReconnectState();
+    };
 
-    socket.on('connect_error', (err) => {
+    const handleSocketConnectError = (err) => {
       console.error('Socket connection error:', err);
-      setIsConnected(false);
-    });
+      enterReconnectState();
+    };
+
+    const handleServerPong = () => {
+      markConnected();
+    };
+
+    socket.on('connect', handleSocketConnect);
+    socket.on('disconnect', handleSocketDisconnect);
+    socket.on('connect_error', handleSocketConnectError);
+    socket.on('server-pong', handleServerPong);
 
     const handleNewEmail = (email) => {
       setEmails((prev) => {
@@ -107,15 +164,69 @@ function App() {
       }
     };
 
-    socket.on('email-history', (history) => setEmails(history));
+    const handleEmailHistory = (history) => {
+      setEmails(history);
+    };
+
+    socket.on('email-history', handleEmailHistory);
     socket.on('new-email', handleNewEmail);
+
+    heartbeatIntervalRef.current = window.setInterval(() => {
+      if (!socket.connected) {
+        enterReconnectState();
+        return;
+      }
+
+      if (isHeartbeatStale(lastPongAtRef.current)) {
+        enterReconnectState();
+      }
+
+      socket.emit('client-ping', { sentAt: Date.now() });
+    }, HEARTBEAT_INTERVAL_MS);
 
     handleInitialFetch(currentEmailRef.current);
 
     return () => {
+      clearOfflineTimer();
+      if (heartbeatIntervalRef.current) {
+        window.clearInterval(heartbeatIntervalRef.current);
+        heartbeatIntervalRef.current = null;
+      }
+      if (fallbackPollIntervalRef.current) {
+        window.clearInterval(fallbackPollIntervalRef.current);
+        fallbackPollIntervalRef.current = null;
+      }
+      socket.off('connect', handleSocketConnect);
+      socket.off('disconnect', handleSocketDisconnect);
+      socket.off('connect_error', handleSocketConnectError);
+      socket.off('server-pong', handleServerPong);
+      socket.off('email-history', handleEmailHistory);
+      socket.off('new-email', handleNewEmail);
       socket.disconnect();
     };
   }, [handleInitialFetch]);
+
+  useEffect(() => {
+    if (fallbackPollIntervalRef.current) {
+      window.clearInterval(fallbackPollIntervalRef.current);
+      fallbackPollIntervalRef.current = null;
+    }
+
+    if (!shouldUseFallbackPolling(connectionStatus)) {
+      return undefined;
+    }
+
+    fallbackPollIntervalRef.current = window.setInterval(() => {
+      handleInitialFetch(currentEmailRef.current);
+    }, FALLBACK_POLL_INTERVAL_MS);
+
+    return () => {
+      if (fallbackPollIntervalRef.current) {
+        window.clearInterval(fallbackPollIntervalRef.current);
+        fallbackPollIntervalRef.current = null;
+      }
+    };
+  }, [connectionStatus, handleInitialFetch]);
 
   const handleCreateNew = useCallback(() => {
     const oldEmail = currentEmailRef.current;
@@ -146,7 +257,7 @@ function App() {
       <Background />
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header isConnected={isConnected} />
+        <Header connectionStatus={connectionStatus} />
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           <div className={selectedEmail ? 'hidden lg:block' : 'block'}>

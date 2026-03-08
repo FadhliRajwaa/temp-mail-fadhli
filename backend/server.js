@@ -58,6 +58,13 @@ const activeRooms = new Map();
 
 io.on('connection', (socket) => {
   console.log(`🔌 Client connected: ${socket.id}`);
+
+  socket.on('client-ping', (payload = {}) => {
+    socket.emit('server-pong', {
+      receivedAt: Date.now(),
+      sentAt: payload.sentAt || null
+    });
+  });
   
   /**
    * Event: join-room
@@ -112,8 +119,8 @@ io.on('connection', (socket) => {
   /**
    * Event: disconnect
    */
-  socket.on('disconnect', () => {
-    console.log(`🔌 Client disconnected: ${socket.id}`);
+  socket.on('disconnect', (reason) => {
+    console.log(`🔌 Client disconnected: ${socket.id} (${reason})`);
     
     // Bersihkan dari semua rooms
     activeRooms.forEach((sockets, room) => {
