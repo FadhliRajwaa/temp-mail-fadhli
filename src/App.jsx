@@ -253,13 +253,13 @@ function App() {
   }, [handleInitialFetch]);
 
   return (
-    <div className="relative min-h-screen text-[var(--text-primary)] selection:bg-cyan-300/20 selection:text-white">
+    <div className="relative min-h-screen text-[var(--text-primary)] selection:bg-lime-300/18 selection:text-white">
       <Background />
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header connectionStatus={connectionStatus} />
 
-        <main className="mx-auto flex w-full max-w-[90rem] flex-1 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        <main className="mx-auto flex w-full max-w-[90rem] flex-1 flex-col gap-5 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
           <div className={selectedEmail ? 'hidden lg:block' : 'block'}>
             <HeroSection
               emailAddress={emailAddress}
@@ -270,7 +270,7 @@ function App() {
             />
           </div>
 
-          <div className="grid min-h-[30rem] grid-cols-1 gap-5 lg:h-[calc(100vh-22rem)] lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] xl:gap-6">
+          <div className="grid min-h-[30rem] grid-cols-1 gap-4 lg:h-[calc(100vh-19.5rem)] lg:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] xl:gap-5">
             <div className="h-full">
               <InboxList
                 emails={emails}
@@ -282,8 +282,8 @@ function App() {
             <div className="h-full">
               <Suspense
                 fallback={(
-                  <div className="premium-panel flex h-full min-h-[28rem] items-center justify-center rounded-[1.9rem]">
-                    <div className="h-9 w-9 rounded-full border-2 border-cyan-200/15 border-t-cyan-200 animate-spin" />
+                  <div className="control-panel flex h-full min-h-[28rem] items-center justify-center rounded-[1.6rem]">
+                    <div className="h-9 w-9 rounded-full border-2 border-lime-300/15 border-t-lime-300 animate-spin" />
                   </div>
                 )}
               >
