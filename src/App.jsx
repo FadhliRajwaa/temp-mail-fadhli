@@ -256,7 +256,10 @@ function App() {
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header connectionStatus={connectionStatus} />
 
-        <main className="pt-[5.5rem] sm:pt-[6.5rem] mx-auto flex w-full max-w-[85rem] flex-1 flex-col gap-4 px-3 py-4 sm:px-5 sm:py-6 lg:gap-5 lg:px-8 lg:py-8">
+        {/* Extra top spacing for fixed header */}
+        <div className="h-16 sm:h-[4.5rem] shrink-0" />
+        
+        <main className="mx-auto flex w-full max-w-[85rem] flex-1 flex-col gap-4 px-3 py-4 sm:px-5 sm:py-6 lg:gap-5 lg:px-8 lg:py-8">
           {/* Hero section - hidden when email selected on mobile */}
           <div className={selectedEmail ? 'hidden lg:block' : 'block'}>
             <HeroSection
