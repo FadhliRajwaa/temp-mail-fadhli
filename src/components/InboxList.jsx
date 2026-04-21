@@ -4,11 +4,11 @@ import { Inbox, Mail, ShieldCheck, Clock, ChevronRight } from 'lucide-react';
 const EmailItem = memo(function EmailItem({ email, isSelected, onClick, formatDate, index }) {
   const initials = email.from?.charAt(0)?.toUpperCase() || '?';
   const domainColors = [
-    'bg-teal-50 text-teal-700 border-teal-200',
-    'bg-amber-50 text-amber-700 border-amber-200',
-    'bg-rose-50 text-rose-700 border-rose-200',
-    'bg-indigo-50 text-indigo-700 border-indigo-200',
-    'bg-emerald-50 text-emerald-700 border-emerald-200',
+    'bg-teal-100 text-teal-800 border-teal-300',
+    'bg-cyan-100 text-cyan-800 border-cyan-300',
+    'bg-blue-100 text-blue-800 border-blue-300',
+    'bg-indigo-100 text-indigo-800 border-indigo-300',
+    'bg-sky-100 text-sky-800 border-sky-300',
   ];
   const colorClass = domainColors[index % domainColors.length];
 
@@ -17,50 +17,50 @@ const EmailItem = memo(function EmailItem({ email, isSelected, onClick, formatDa
       type="button"
       onClick={onClick}
       style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
-      className={`animate-fade-in-up w-full text-left group transition-all duration-300 rounded-xl sm:rounded-2xl border ${
+      className={`anim-slide-up w-full text-left group transition-all duration-250 rounded-xl sm:rounded-2xl border-2 ${
         isSelected
-          ? 'bg-white border-teal-300 shadow-lg shadow-teal-500/10 scale-[1.01]'
-          : 'bg-white/60 border-stone-200/60 hover:bg-white hover:border-stone-300 hover:shadow-md hover:-translate-y-0.5'
+          ? 'bg-white border-cyan-400 shadow-lg shadow-cyan-500/10 scale-[1.01]'
+          : 'bg-white border-slate-200 hover:border-cyan-300 hover:shadow-md hover:-translate-y-0.5'
       }`}
     >
       <div className="relative p-3.5 sm:p-4">
         {/* Selection indicator */}
         {isSelected && (
-          <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-teal-500" />
+          <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-cyan-500" />
         )}
         
         <div className="flex items-start gap-3 sm:gap-4">
           {/* Avatar */}
-          <div className={`shrink-0 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl border text-sm font-bold ${colorClass} transition-transform duration-300 group-hover:scale-105`}>
+          <div className={`shrink-0 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl border-2 text-sm font-extrabold ${colorClass} transition-transform duration-300 group-hover:scale-105`}>
             {initials}
           </div>
 
           {/* Content */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <p className="truncate text-sm font-semibold text-[#1c1917]">{email.from}</p>
+              <p className="truncate text-sm font-bold text-slate-900">{email.from}</p>
               {isSelected && (
-                <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full bg-teal-50 border border-teal-200 text-[0.6rem] font-bold uppercase tracking-wider text-teal-700">
-                  Active
+                <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full bg-cyan-50 border border-cyan-200 text-[0.6rem] font-extrabold uppercase tracking-wider text-cyan-700 sm:inline-flex">
+                  active
                 </span>
               )}
             </div>
 
-            <p className="truncate text-sm font-medium text-[#57534e] mb-1.5">
+            <p className="truncate text-sm font-bold text-slate-600 mb-1.5">
               {email.subject || '(No Subject)'}
             </p>
             
-            <p className="line-clamp-2 text-xs leading-relaxed text-stone-400">
+            <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
               {email.bodyText || 'No preview available'}
             </p>
           </div>
 
           {/* Time + Chevron */}
           <div className="shrink-0 flex flex-col items-end gap-1.5">
-            <span className="text-[0.65rem] font-semibold text-stone-400 uppercase tracking-wider whitespace-nowrap">
+            <span className="text-[0.65rem] font-extrabold text-slate-500 uppercase tracking-wider whitespace-nowrap">
               {formatDate(email.receivedAt)}
             </span>
-            <ChevronRight className={`h-4 w-4 text-stone-300 transition-all duration-300 ${isSelected ? 'text-teal-500 translate-x-0.5' : 'group-hover:text-stone-400 group-hover:translate-x-0.5'}`} />
+            <ChevronRight className={`h-4 w-4 transition-all duration-300 ${isSelected ? 'text-cyan-600 translate-x-0.5' : 'text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5'}`} />
           </div>
         </div>
       </div>
@@ -70,24 +70,24 @@ const EmailItem = memo(function EmailItem({ email, isSelected, onClick, formatDa
 
 const EmptyState = memo(function EmptyState() {
   return (
-    <div className="animate-fade-in-scale flex flex-col items-center justify-center px-6 py-16 sm:py-20 text-center">
+    <div className="anim-scale-in flex flex-col items-center justify-center px-6 py-16 sm:py-20 text-center">
       <div className="relative mb-6">
-        <div className="absolute inset-0 bg-teal-500/10 rounded-full blur-xl" />
-        <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white to-stone-50 border border-stone-200/80 shadow-lg">
-          <Inbox className="h-8 w-8 sm:h-10 sm:w-10 text-stone-300" />
+        <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-2xl" />
+        <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl sm:rounded-3xl bg-white border-2 border-slate-200 shadow-lg">
+          <Inbox className="h-8 w-8 sm:h-10 sm:w-10 text-slate-300" />
         </div>
       </div>
       
       <div className="space-y-2 max-w-xs">
-        <h3 className="text-heading text-lg sm:text-xl text-[#1c1917]">Inbox Empty</h3>
-        <p className="text-body text-sm text-stone-600 leading-relaxed">
+        <h3 className="text-heading text-lg sm:text-xl text-slate-900 font-extrabold">Inbox Empty</h3>
+        <p className="text-body text-sm text-slate-600 leading-relaxed">
           Your temporary mailbox is ready. Use the address above and emails will appear here instantly.
         </p>
       </div>
       
-      <div className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-stone-50 border border-stone-100">
-        <Clock className="h-3.5 w-3.5 text-stone-500" />
-        <span className="text-xs text-stone-600 font-medium">Auto-deletes after 15 minutes</span>
+      <div className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 border border-slate-200">
+        <Clock className="h-3.5 w-3.5 text-slate-500" />
+        <span className="text-xs text-slate-700 font-bold">Auto-deletes after 15 minutes</span>
       </div>
     </div>
   );
@@ -112,25 +112,25 @@ const InboxList = memo(function InboxList({ emails, selectedEmail, onSelectEmail
   }, []);
 
   return (
-    <section className="animate-fade-in-up stagger-2 flex flex-col h-full">
-      <div className="card-surface rounded-2xl sm:rounded-3xl flex flex-col h-full overflow-hidden">
+    <section className="anim-slide-up delay-2 flex flex-col h-full">
+      <div className="card rounded-2xl sm:rounded-3xl flex flex-col h-full overflow-hidden border-2 border-slate-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5 border-b border-stone-100">
+        <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5 border-b-2 border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-50 border border-teal-100">
-              <Mail className="h-4 w-4 text-teal-600" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-50 border-2 border-cyan-200">
+              <Mail className="h-4 w-4 text-cyan-700" />
             </div>
             <div>
-              <h3 className="text-heading text-base sm:text-lg font-semibold text-[#1c1917]">Inbox</h3>
-              <p className="text-[0.7rem] text-stone-600 font-medium">
+              <h3 className="text-base sm:text-lg font-extrabold text-slate-900">Inbox</h3>
+              <p className="text-[0.7rem] text-slate-600 font-bold">
                 {emails.length} {emails.length === 1 ? 'message' : 'messages'}
               </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-50 border border-stone-100">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-            <span className="text-[0.65rem] font-semibold text-stone-500 uppercase tracking-wider">Secure</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border-2 border-emerald-200">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+            <span className="text-[0.65rem] font-extrabold text-emerald-700 uppercase tracking-wider">Secure</span>
           </div>
         </div>
 
