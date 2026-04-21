@@ -56,7 +56,7 @@ const EmailDetail = memo(function EmailDetail({ email, onClose }) {
           </div>
         </div>
         <h3 className="text-heading text-lg font-semibold text-[#1c1917] mb-2">Select a message</h3>
-        <p className="text-body text-sm text-[#a8a29e] max-w-sm leading-relaxed">
+        <p className="text-body text-sm text-stone-600 max-w-sm leading-relaxed">
           Click any email from the list to view its full content, sender details, and metadata.
         </p>
       </div>
@@ -120,7 +120,7 @@ const EmailDetail = memo(function EmailDetail({ email, onClose }) {
               
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-[#1c1917] truncate">{email.from}</p>
-                <p className="text-xs text-stone-400 font-mono truncate">to: {email.to}</p>
+                <p className="text-xs text-stone-500 font-mono truncate">to: {email.to}</p>
               </div>
               
               <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-50 border border-stone-100">

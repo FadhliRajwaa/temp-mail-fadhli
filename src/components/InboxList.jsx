@@ -80,14 +80,14 @@ const EmptyState = memo(function EmptyState() {
       
       <div className="space-y-2 max-w-xs">
         <h3 className="text-heading text-lg sm:text-xl text-[#1c1917]">Inbox Empty</h3>
-        <p className="text-body text-sm text-[#a8a29e] leading-relaxed">
+        <p className="text-body text-sm text-stone-600 leading-relaxed">
           Your temporary mailbox is ready. Use the address above and emails will appear here instantly.
         </p>
       </div>
       
       <div className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-stone-50 border border-stone-100">
-        <Clock className="h-3.5 w-3.5 text-stone-400" />
-        <span className="text-xs text-stone-500 font-medium">Auto-deletes after 15 minutes</span>
+        <Clock className="h-3.5 w-3.5 text-stone-500" />
+        <span className="text-xs text-stone-600 font-medium">Auto-deletes after 15 minutes</span>
       </div>
     </div>
   );
@@ -122,7 +122,7 @@ const InboxList = memo(function InboxList({ emails, selectedEmail, onSelectEmail
             </div>
             <div>
               <h3 className="text-heading text-base sm:text-lg font-semibold text-[#1c1917]">Inbox</h3>
-              <p className="text-[0.7rem] text-stone-400 font-medium">
+              <p className="text-[0.7rem] text-stone-600 font-medium">
                 {emails.length} {emails.length === 1 ? 'message' : 'messages'}
               </p>
             </div>

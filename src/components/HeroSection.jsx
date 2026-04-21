@@ -85,7 +85,7 @@ const HeroSection = memo(function HeroSection({
               
               <div className="relative space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-stone-400 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-stone-600 uppercase tracking-wider">
                     <div className="h-2 w-2 rounded-full bg-emerald-400 animate-badge-glow" />
                     Active Mailbox
                   </div>
@@ -97,10 +97,10 @@ const HeroSection = memo(function HeroSection({
                 
                 {/* Email Address Display */}
                 <div className="input-surface rounded-xl p-4 text-center break-all">
-                  <div className="text-mono text-sm sm:text-base font-semibold text-[#1c1917] tracking-tight">
+                  <div className="font-mono text-sm sm:text-base font-bold text-stone-900 tracking-tight">
                     {emailAddress}
                   </div>
-                  <div className="mt-2 text-[0.65rem] text-stone-400 font-medium uppercase tracking-wider">
+                  <div className="mt-2 text-[0.65rem] text-stone-600 font-semibold uppercase tracking-wider">
                     Temporary Address
                   </div>
                 </div>
@@ -154,7 +154,7 @@ const HeroSection = memo(function HeroSection({
                 
                 {/* Deep link preview */}
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-stone-50 border border-stone-100">
-                  <LinkIcon className="h-3.5 w-3.5 text-stone-400 shrink-0" />
+                  <LinkIcon className="h-3.5 w-3.5 text-stone-500 shrink-0" />
                   <span className="text-xs text-stone-500 truncate font-mono">{mailboxLink}</span>
                 </div>
                 

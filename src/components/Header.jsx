@@ -53,7 +53,7 @@ const Header = memo(function Header({ connectionStatus }) {
               <h1 className="text-heading text-base sm:text-lg font-bold text-[#1c1917] tracking-tight">
                 Temp<span className="text-teal-600">Mail</span>
               </h1>
-              <p className="hidden sm:block text-[0.65rem] text-[#a8a29e] font-medium tracking-wide uppercase">
+              <p className="hidden sm:block text-[0.65rem] text-stone-600 font-medium tracking-wide uppercase">
                 Disposable Inbox
               </p>
             </div>
