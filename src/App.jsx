@@ -27,7 +27,7 @@ function generateEmailAddress() {
   for (let i = 0; i < 8; i++) {
     randomString += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return `${randomString}@${EMAIL_DOMAIN}`;
+  return randomString + '@' + EMAIL_DOMAIN;
 }
 
 function getInitialEmailAddress() {
@@ -68,7 +68,7 @@ function App() {
 
   const handleInitialFetch = useCallback(async (email) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/emails/${email}`);
+      const response = await fetch(BACKEND_URL + '/api/emails/' + encodeURIComponent(email));
       const data = await response.json();
       if (data.success) setEmails(data.emails || []);
     } catch {
@@ -78,7 +78,7 @@ function App() {
 
   useEffect(() => {
     currentEmailRef.current = emailAddress;
-    window.history.replaceState(null, '', `/${emailAddress}`);
+    window.history.replaceState(null, '', '/' + emailAddress);
   }, [emailAddress]);
 
   useEffect(() => {
@@ -97,7 +97,6 @@ function App() {
       if (offlineTimerRef.current || connectionStatusRef.current === CONNECTION_STATUS.OFFLINE) {
         return;
       }
-
       offlineTimerRef.current = window.setTimeout(() => {
         offlineTimerRef.current = null;
         setConnectionStatus(CONNECTION_STATUS.OFFLINE);
@@ -176,11 +175,9 @@ function App() {
         enterReconnectState();
         return;
       }
-
       if (isHeartbeatStale(lastPongAtRef.current)) {
         enterReconnectState();
       }
-
       socket.emit('client-ping', { sentAt: Date.now() });
     }, HEARTBEAT_INTERVAL_MS);
 
@@ -253,13 +250,14 @@ function App() {
   }, [handleInitialFetch]);
 
   return (
-    <div className="relative min-h-screen text-[var(--text-primary)]">
+    <div className="relative min-h-screen text-[#1c1917]">
       <Background />
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header connectionStatus={connectionStatus} />
 
-        <main className="mx-auto flex w-full max-w-[96rem] flex-1 flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6 lg:gap-6 lg:px-8 lg:py-8">
+        <main className="pt-16 sm:pt-[4.5rem] mx-auto flex w-full max-w-[85rem] flex-1 flex-col gap-4 px-3 py-4 sm:px-5 sm:py-6 lg:gap-5 lg:px-8 lg:py-8">
+          {/* Hero section - hidden when email selected on mobile */}
           <div className={selectedEmail ? 'hidden lg:block' : 'block'}>
             <HeroSection
               emailAddress={emailAddress}
@@ -270,8 +268,10 @@ function App() {
             />
           </div>
 
-          <div className="grid min-h-[30rem] grid-cols-1 gap-4 lg:h-[calc(100vh-18.75rem)] lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] xl:gap-5">
-            <div className="h-full">
+          {/* Main content grid */}
+          <div className="grid flex-1 grid-cols-1 gap-4 lg:h-[calc(100vh-18rem)] lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:gap-5">
+            {/* Inbox List */}
+            <div className={selectedEmail ? 'hidden lg:block h-full' : 'h-full'}>
               <InboxList
                 emails={emails}
                 selectedEmail={selectedEmail}
@@ -279,11 +279,12 @@ function App() {
               />
             </div>
 
+            {/* Email Detail */}
             <div className="h-full">
               <Suspense
                 fallback={(
-                  <div className="control-panel flex h-full min-h-[28rem] items-center justify-center rounded-[1.8rem]">
-                    <div className="h-9 w-9 rounded-full border-2 border-[rgba(35,52,73,0.12)] border-t-[var(--signal-clay)] animate-spin" />
+                  <div className="card-surface flex h-full min-h-[24rem] items-center justify-center rounded-2xl sm:rounded-3xl">
+                    <div className="h-8 w-8 rounded-full border-2 border-stone-200 border-t-teal-500 animate-spin" />
                   </div>
                 )}
               >

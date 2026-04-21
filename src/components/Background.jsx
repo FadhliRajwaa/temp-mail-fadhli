@@ -1,20 +1,138 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 
 const Background = memo(function Background() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    let animationId;
+    let particles = [];
+    
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    
+    // Create particles
+    const particleCount = Math.min(25, Math.floor(window.innerWidth / 60));
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 1,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.3 + 0.1,
+      });
+    }
+    
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach((p) => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(13, 148, 136, ${p.opacity})`;
+        ctx.fill();
+      });
+      
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < 200) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(13, 148, 136, ${0.08 * (1 - dist / 200)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden bg-[var(--bg-base)]">
-      <div className="absolute inset-0 paper-grain opacity-80" />
-      <div className="absolute inset-0 signal-grid opacity-[0.22]" />
-      <div className="absolute inset-0 scan-lines" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_8%_10%,rgba(188,109,73,0.14),transparent_26%),radial-gradient(circle_at_88%_4%,rgba(35,52,73,0.1),transparent_22%),radial-gradient(circle_at_40%_90%,rgba(174,138,65,0.1),transparent_28%)]" />
-
-      <div className="orbital-accent left-[-5rem] top-[6rem] h-36 w-36 border border-white/40 bg-[rgba(255,252,248,0.52)]" />
-      <div className="orbital-accent right-[8%] top-[12%] h-24 w-24 border border-[rgba(35,52,73,0.08)] bg-[rgba(255,245,236,0.7)] [animation-delay:2s]" />
-      <div className="orbital-accent bottom-[16%] left-[18%] h-20 w-20 border border-[rgba(188,109,73,0.12)] bg-[rgba(255,240,230,0.78)] [animation-delay:4s]" />
-
-      <div className="absolute inset-x-[7%] top-[5.2rem] hidden h-px bg-[linear-gradient(90deg,transparent,rgba(35,52,73,0.18),transparent)] lg:block" />
-      <div className="absolute inset-x-[10%] bottom-[12%] hidden h-px bg-[linear-gradient(90deg,transparent,rgba(188,109,73,0.18),transparent)] lg:block" />
-      <div className="signal-sweep opacity-70" />
+    <div className="fixed inset-0 z-[-1] overflow-hidden bg-[#faf8f5]">
+      {/* Base gradient */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse at 20% 30%, rgba(13, 148, 136, 0.04) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 70%, rgba(217, 119, 6, 0.03) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 50%, rgba(194, 65, 12, 0.02) 0%, transparent 60%),
+            #faf8f5
+          `
+        }}
+      />
+      
+      {/* Animated mesh gradient */}
+      <div 
+        className="absolute inset-0 opacity-40"
+        style={{
+          background: `
+            radial-gradient(circle at 15% 20%, rgba(13, 148, 136, 0.08) 0%, transparent 30%),
+            radial-gradient(circle at 85% 80%, rgba(217, 119, 6, 0.06) 0%, transparent 30%),
+            radial-gradient(circle at 50% 50%, rgba(194, 65, 12, 0.04) 0%, transparent 40%)
+          `,
+          animation: 'gradient-shift 20s ease-in-out infinite',
+          backgroundSize: '200% 200%'
+        }}
+      />
+      
+      {/* Subtle grid pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }}
+      />
+      
+      {/* Particle canvas */}
+      <canvas 
+        ref={canvasRef}
+        className="absolute inset-0"
+        style={{ opacity: 0.6 }}
+      />
+      
+      {/* Soft vignette */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.03) 100%)'
+        }}
+      />
     </div>
   );
 });

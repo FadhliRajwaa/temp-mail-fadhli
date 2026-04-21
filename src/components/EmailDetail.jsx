@@ -1,25 +1,10 @@
 import { useRef, useMemo, useState, useEffect, memo, useCallback } from 'react';
-import {
-  CalendarDays,
-  ChevronLeft,
-  Eye,
-  Link2,
-  Loader2,
-  ShieldCheck,
-  Trash2,
-} from 'lucide-react';
-import { cn } from '../lib/utils';
+import { CalendarDays, ChevronLeft, ShieldCheck, Trash2, X, Eye, Loader2 } from 'lucide-react';
 
 function composeEmailSrcDoc(html) {
   const sanitized = (html || '').replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>
-      html,body{margin:0;padding:18px;background:#fffdf8;color:#241c16;font-family:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;height:auto!important;min-height:0!important;overflow:hidden!important;line-height:1.7}
-      *{max-width:100%!important;box-sizing:border-box!important}
-      img,svg,video{max-width:100%!important;height:auto!important;display:block}
-      a{color:#233449!important;text-decoration:underline!important}
-      p,h1,h2,h3,h4,h5,h6,li,span,div{color:#241c16!important}
-      body>:last-child{margin-bottom:0!important}
-    </style></head><body>${sanitized}</body></html>`;
+  const styles = 'html,body{margin:0;padding:20px;background:#fffdf8;color:#1c1917;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;height:auto!important;min-height:0!important;overflow:hidden!important;line-height:1.65}*{max-width:100%!important;box-sizing:border-box!important}img,svg,video{max-width:100%!important;height:auto!important;display:block}a{color:#0d9488!important;text-decoration:underline!important}p,h1,h2,h3,h4,h5,h6,li,span,div{color:#1c1917!important}body>:last-child{margin-bottom:0!important}';
+  return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>' + styles + '</style></head><body>' + sanitized + '</body></html>';
 }
 
 const EmailDetail = memo(function EmailDetail({ email, onClose }) {
@@ -35,22 +20,19 @@ const EmailDetail = memo(function EmailDetail({ email, onClose }) {
     if (resizeTimeoutRef.current) {
       clearTimeout(resizeTimeoutRef.current);
     }
-
     resizeTimeoutRef.current = setTimeout(() => {
       const iframe = iframeRef.current;
       if (!iframe) return;
-
       try {
         const doc = iframe.contentDocument || iframe.contentWindow?.document;
         if (!doc) return;
-
         const height = Math.max(doc.body?.scrollHeight || 0, doc.documentElement?.scrollHeight || 0);
-        iframe.style.height = `${height + 40}px`;
+        iframe.style.height = Math.max(height + 32, 200) + 'px';
         setIframeLoaded(true);
       } catch {
         setIframeLoaded(true);
       }
-    }, 50);
+    }, 80);
   }, []);
 
   useEffect(() => () => {
@@ -66,121 +48,130 @@ const EmailDetail = memo(function EmailDetail({ email, onClose }) {
 
   if (!email) {
     return (
-      <div className="control-panel panel-topline section-reveal section-delay-3 hidden h-full min-h-[28rem] flex-col items-center justify-center rounded-[1.8rem] px-8 py-12 text-center lg:flex">
-        <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-[1.5rem] border border-[rgba(85,73,61,0.1)] bg-[rgba(255,255,255,0.46)]">
-          <Eye className="h-9 w-9 text-[var(--text-muted)]" />
+      <div className="animate-fade-in-scale hidden lg:flex flex-col items-center justify-center h-full min-h-[28rem] card-surface rounded-2xl sm:rounded-3xl p-8 text-center">
+        <div className="relative mb-6">
+          <div className="absolute inset-0 bg-teal-500/10 rounded-full blur-xl" />
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-white to-stone-50 border border-stone-200/80 shadow-lg">
+            <Eye className="h-7 w-7 text-stone-300" />
+          </div>
         </div>
-        <div className="editorial-kicker mb-2">Message Viewer</div>
-        <h3 className="font-display text-[2.2rem] leading-none text-[var(--signal-ink)]">
-          Select a message to inspect it.
-        </h3>
-        <p className="mt-3 max-w-md text-sm leading-7 text-[var(--text-secondary)]">
-          The full payload opens here, including HTML emails, sender details, and the exact time
-          the relay captured it.
+        <h3 className="text-heading text-lg font-semibold text-[#1c1917] mb-2">Select a message</h3>
+        <p className="text-body text-sm text-[#a8a29e] max-w-sm leading-relaxed">
+          Click any email from the list to view its full content, sender details, and metadata.
         </p>
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        'control-panel control-panel-strong panel-topline mail-shell section-reveal section-delay-3 flex h-full min-h-[28rem] flex-col rounded-none lg:rounded-[1.8rem]',
-        'fixed inset-0 z-50 bg-[rgba(246,240,230,0.96)] lg:static lg:inset-auto lg:bg-transparent'
-      )}
-    >
-      <div className="flex items-center justify-between border-b border-[rgba(85,73,61,0.08)] px-4 py-4 sm:px-5">
-        <div className="flex min-w-0 items-center gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="button-surface inline-flex h-11 w-11 items-center justify-center rounded-[1rem] border border-[rgba(85,73,61,0.1)] bg-[rgba(255,255,255,0.4)] text-[var(--text-secondary)] lg:hidden"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-
-          <div className="min-w-0">
-            <div className="editorial-kicker mb-1 flex items-center gap-2">
-              <ShieldCheck className="h-3.5 w-3.5 text-[var(--signal-clay)]" />
-              Secure Inspection
-            </div>
-            <h2 className="line-clamp-1 font-display text-[1.9rem] leading-none text-[var(--signal-ink)] sm:text-[2.15rem]">
-              {email.subject || '(No Subject)'}
-            </h2>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="button-surface inline-flex h-11 w-11 items-center justify-center rounded-[1rem] border border-[rgba(188,102,90,0.14)] bg-[rgba(188,102,90,0.08)] text-[var(--signal-rose)]"
-        >
-          <Trash2 className="h-5 w-5" />
-        </button>
-      </div>
-
-      <div className="border-b border-[rgba(85,73,61,0.08)] px-4 py-4 sm:px-5">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1rem] border border-[rgba(35,52,73,0.12)] bg-[rgba(35,52,73,0.08)] text-lg font-bold text-[var(--signal-ink)]">
-              {email.from.charAt(0).toUpperCase()}
-            </div>
-
-            <div className="min-w-0">
-              <div className="mb-1 line-clamp-1 text-sm font-semibold text-[var(--signal-ink)]">
-                {email.from}
+    <div className="animate-slide-in-right fixed inset-0 z-50 lg:static lg:inset-auto lg:z-auto lg:h-full">
+      <div 
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm lg:hidden animate-fade-in-scale"
+        onClick={onClose}
+      />
+      
+      <div className="absolute inset-x-0 bottom-0 lg:relative lg:inset-auto lg:h-full max-h-[90vh] lg:max-h-none bg-[#faf8f5] lg:bg-transparent rounded-t-3xl lg:rounded-none overflow-hidden flex flex-col animate-slide-in-bottom lg:animate-slide-in-right">
+        <div className="card-surface rounded-t-3xl lg:rounded-2xl lg:rounded-3xl flex flex-col h-full overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4 border-b border-stone-100 shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={onClose}
+                className="lg:hidden btn-surface flex h-9 w-9 items-center justify-center rounded-xl bg-stone-50 border border-stone-200 text-stone-500 hover:text-stone-700"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-teal-500 shrink-0" />
+                  <span className="text-[0.65rem] font-semibold text-teal-600 uppercase tracking-wider">Verified</span>
+                </div>
+                <h2 className="text-heading text-base sm:text-lg font-semibold text-[#1c1917] truncate">
+                  {email.subject || '(No Subject)'}
+                </h2>
               </div>
-              <div className="font-mono-ui text-xs text-[var(--text-muted)]">to: {email.to}</div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="btn-surface flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 border border-rose-200 text-rose-500 hover:bg-rose-100"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="hidden lg:flex btn-surface h-9 w-9 items-center justify-center rounded-xl bg-stone-50 border border-stone-200 text-stone-500 hover:text-stone-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
           </div>
 
-          <div className="rounded-[1.2rem] border border-[rgba(85,73,61,0.08)] bg-[rgba(255,255,255,0.38)] px-4 py-3 text-left xl:min-w-[15rem] xl:text-right">
-            <div className="mb-1 flex items-center gap-1 text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-[var(--text-muted)] xl:justify-end">
-              <CalendarDays className="h-3.5 w-3.5 text-[var(--signal-gold)]" />
-              received
-            </div>
-            <div className="text-sm font-medium text-[var(--text-secondary)]">
-              {new Date(email.receivedAt).toLocaleString()}
+          {/* Sender Info */}
+          <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-stone-100 shrink-0">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-200 text-base sm:text-lg font-bold text-teal-700">
+                {email.from.charAt(0).toUpperCase()}
+              </div>
+              
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-[#1c1917] truncate">{email.from}</p>
+                <p className="text-xs text-stone-400 font-mono truncate">to: {email.to}</p>
+              </div>
+              
+              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-50 border border-stone-100">
+                <CalendarDays className="h-3.5 w-3.5 text-amber-500" />
+                <span className="text-xs font-medium text-stone-600">
+                  {new Date(email.receivedAt).toLocaleString()}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5">
-        <div className="mb-4 flex flex-wrap items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
-          <span className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[rgba(85,73,61,0.08)] bg-[rgba(255,255,255,0.34)] px-3.5 py-2">
-            <Link2 className="h-3.5 w-3.5 text-[var(--signal-clay)]" />
-            preview mode
-          </span>
-          <span className="inline-flex min-h-10 items-center rounded-full border border-[rgba(85,73,61,0.08)] bg-[rgba(255,255,255,0.34)] px-3.5 py-2">
-            html or plain text supported
-          </span>
-        </div>
+          {/* Email Content */}
+          <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
+            <div className="mb-4 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-100 text-[0.65rem] font-semibold text-teal-700 uppercase tracking-wider">
+                <ShieldCheck className="h-3 w-3" />
+                Safe Preview
+              </span>
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-stone-50 border border-stone-100 text-[0.65rem] font-medium text-stone-500 uppercase tracking-wider">
+                {emailSrcDoc ? 'HTML' : 'Plain Text'}
+              </span>
+            </div>
 
-        <div className="rounded-[1.45rem] border border-[rgba(85,73,61,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.56),rgba(244,235,224,0.92))] p-3 sm:p-4">
-          {emailSrcDoc ? (
-            <div className="relative overflow-hidden rounded-[1.15rem] border border-[rgba(85,73,61,0.08)] bg-[#fffdf8] shadow-[0_1rem_2.6rem_rgba(77,57,35,0.08)]">
-              {!iframeLoaded && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#fffdf8]">
-                  <Loader2 className="h-6 w-6 animate-spin text-[var(--signal-clay)]" />
+            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white shadow-sm overflow-hidden">
+              {emailSrcDoc ? (
+                <div className="relative">
+                  {!iframeLoaded && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white min-h-[200px]">
+                      <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
+                    </div>
+                  )}
+                  <iframe
+                    title="email-content"
+                    ref={iframeRef}
+                    className={iframeLoaded ? 'block w-full border-0' : 'block w-full border-0 opacity-0'}
+                    onLoad={resizeIframe}
+                    sandbox="allow-same-origin allow-popups allow-top-navigation-by-user-activation"
+                    loading="lazy"
+                    srcDoc={emailSrcDoc}
+                    style={{ minHeight: '200px' }}
+                  />
+                </div>
+              ) : (
+                <div className="p-5 sm:p-6">
+                  <pre className="font-mono text-sm text-[#1c1917] whitespace-pre-wrap leading-relaxed">
+                    {email.bodyText || '(Empty message)'}
+                  </pre>
                 </div>
               )}
-              <iframe
-                title="email-content"
-                ref={iframeRef}
-                className={cn('block min-h-[420px] w-full border-0', !iframeLoaded && 'opacity-0')}
-                onLoad={resizeIframe}
-                sandbox="allow-same-origin allow-popups allow-top-navigation-by-user-activation"
-                loading="lazy"
-                srcDoc={emailSrcDoc}
-              />
             </div>
-          ) : (
-            <div className="rounded-[1.15rem] border border-[rgba(85,73,61,0.08)] bg-[#fffdf8] p-5 shadow-[0_1rem_2.4rem_rgba(77,57,35,0.06)]">
-              <div className="font-mono-ui whitespace-pre-wrap text-sm leading-7 text-[var(--text-secondary)]">
-                {email.bodyText || '(Empty message)'}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
