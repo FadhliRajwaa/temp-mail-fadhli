@@ -272,9 +272,9 @@ function App() {
           </div>
 
           {/* Main content grid */}
-          <div className="grid flex-1 grid-cols-1 gap-4 lg:h-[calc(100vh-18rem)] lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:gap-5">
-            {/* Inbox List */}
-            <div className={selectedEmail ? 'hidden lg:block h-full' : 'h-full'}>
+          <div className="grid flex-1 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-[minmax(0,24rem)_1fr] xl:grid-cols-[minmax(0,26rem)_1fr] lg:gap-4 xl:gap-5 min-h-0">
+            {/* Inbox List - hidden on mobile when email selected */}
+            <div className={`${selectedEmail ? 'hidden lg:block' : 'block'} h-full min-h-[20rem] sm:min-h-[24rem] lg:min-h-0`}>
               <InboxList
                 emails={emails}
                 selectedEmail={selectedEmail}
@@ -282,12 +282,12 @@ function App() {
               />
             </div>
 
-            {/* Email Detail */}
-            <div className="h-full">
+            {/* Email Detail - full screen on mobile when selected */}
+            <div className={`${selectedEmail ? 'fixed inset-0 z-40 lg:static lg:z-auto' : 'hidden lg:block'} h-full lg:min-h-0`}>
               <Suspense
                 fallback={(
-                  <div className="card-surface flex h-full min-h-[24rem] items-center justify-center rounded-2xl sm:rounded-3xl">
-                    <div className="h-8 w-8 rounded-full border-2 border-stone-200 border-t-teal-500 animate-spin" />
+                  <div className="card flex h-full min-h-[20rem] sm:min-h-[24rem] items-center justify-center rounded-xl sm:rounded-2xl lg:rounded-3xl">
+                    <div className="h-8 w-8 rounded-full border-2 border-slate-200 border-t-cyan-500 anim-spin" />
                   </div>
                 )}
               >
