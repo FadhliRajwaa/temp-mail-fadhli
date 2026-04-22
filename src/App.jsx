@@ -250,16 +250,16 @@ function App() {
   }, [handleInitialFetch]);
 
   return (
-    <div className="relative min-h-screen text-[#1c1917]">
+    <div className="relative min-h-screen text-[var(--color-text-primary)]">
       <Background />
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header connectionStatus={connectionStatus} />
 
-        {/* Extra top spacing for fixed header */}
-        <div className="h-16 sm:h-[4.5rem] shrink-0" />
-        
-        <main className="mx-auto flex w-full max-w-[85rem] flex-1 flex-col gap-4 px-3 py-4 sm:px-5 sm:py-6 lg:gap-5 lg:px-8 lg:py-8">
+        {/* Spacer for fixed header */}
+        <div className="h-14 sm:h-16 shrink-0" />
+
+        <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6 lg:gap-5 lg:px-8 lg:py-8">
           {/* Hero section - hidden when email selected on mobile */}
           <div className={selectedEmail ? 'hidden lg:block' : 'block'}>
             <HeroSection
@@ -272,7 +272,7 @@ function App() {
           </div>
 
           {/* Main content grid */}
-          <div className="grid flex-1 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-[minmax(0,24rem)_1fr] xl:grid-cols-[minmax(0,26rem)_1fr] lg:gap-4 xl:gap-5 min-h-0">
+          <div className="grid flex-1 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-[minmax(0,22rem)_1fr] xl:grid-cols-[minmax(0,24rem)_1fr] lg:gap-5 min-h-0">
             {/* Inbox List - hidden on mobile when email selected */}
             <div className={`${selectedEmail ? 'hidden lg:block' : 'block'} h-full min-h-[20rem] sm:min-h-[24rem] lg:min-h-0`}>
               <InboxList
@@ -286,8 +286,8 @@ function App() {
             <div className={`${selectedEmail ? 'fixed inset-0 z-40 lg:static lg:z-auto' : 'hidden lg:block'} h-full lg:min-h-0`}>
               <Suspense
                 fallback={(
-                  <div className="card flex h-full min-h-[20rem] sm:min-h-[24rem] items-center justify-center rounded-xl sm:rounded-2xl lg:rounded-3xl">
-                    <div className="h-8 w-8 rounded-full border-2 border-slate-200 border-t-cyan-500 anim-spin" />
+                  <div className="surface-elevated flex h-full min-h-[20rem] items-center justify-center rounded-2xl sm:rounded-3xl">
+                    <div className="h-6 w-6 rounded-full border-2 border-[var(--color-border-default)] border-t-blue-500 anim-spin" />
                   </div>
                 )}
               >
