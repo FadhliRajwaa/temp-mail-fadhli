@@ -3,12 +3,13 @@ import { CalendarDays, ChevronLeft, ShieldCheck, Trash2, X, Eye, Loader2 } from 
 
 function composeEmailSrcDoc(html) {
   const sanitized = (html || '').replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+  // Keep light background — most HTML emails are designed for white/light backgrounds.
+  // Do NOT force dark colors on email content; it breaks inline styles from senders.
   const styles = `
-    html,body{margin:0;padding:20px;background:#0c1021;color:#f1f5f9;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;height:auto!important;min-height:0!important;overflow:hidden!important;line-height:1.65}
+    html,body{margin:0;padding:20px;background:#ffffff;color:#1a1a1a;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;height:auto!important;min-height:0!important;overflow:hidden!important;line-height:1.65}
     *{max-width:100%!important;box-sizing:border-box!important}
     img,svg,video{max-width:100%!important;height:auto!important;display:block}
-    a{color:#60a5fa!important;text-decoration:underline!important}
-    p,h1,h2,h3,h4,h5,h6,li,span,div{color:#f1f5f9!important}
+    a{color:#2563eb!important;text-decoration:underline!important}
     body>:last-child{margin-bottom:0!important}
   `.replace(/\n\s+/g, '');
   return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank"><style>' + styles + '</style></head><body>' + sanitized + '</body></html>';
@@ -174,8 +175,8 @@ const EmailDetail = memo(function EmailDetail({ email, onClose }) {
                   />
                 </div>
               ) : (
-                <div className="p-4 sm:p-5">
-                  <pre className="font-mono text-xs sm:text-sm text-[var(--color-text-primary)] whitespace-pre-wrap leading-relaxed">
+                <div className="p-4 sm:p-5 bg-white rounded-xl">
+                  <pre className="font-mono text-xs sm:text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
                     {email.bodyText || '(Empty message)'}
                   </pre>
                 </div>
